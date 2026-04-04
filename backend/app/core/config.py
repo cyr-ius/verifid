@@ -20,7 +20,7 @@ class Settings(BaseSettings):
 
     # Callback configuration - must be a publicly accessible HTTPS URL
     APP_BASE_URL: str  # e.g. https://yourdomain.com
-    VC_API_KEY: str = ""  # Optional API key for callbacks
+    VC_API_KEY: str  # API key for callbacks
 
     # CORS
     CORS_ORIGINS: list[str] = ["http://localhost:4200"]
