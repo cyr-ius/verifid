@@ -135,7 +135,9 @@ async def issuance_callback(
     response_model=PresentationResponse,
     summary="Request VC presentation from an employee (helpdesk flow)",
 )
-async def verify_credential() -> PresentationResponse:
+async def verify_credential(
+    _: bool = Depends(require_helpdesk_access),
+) -> PresentationResponse:
     """
     Initiate a Verifiable Credential presentation request.
     The helpdesk displays the returned QR code; the employee scans it with
