@@ -13,7 +13,6 @@ services:
     working_dir: /workspace
     command: sleep infinity # VS Code takes over
     environment:
-      - SECRET_KEY=dev-secret-key-change-in-production
       - ENVIRONMENT=development
       - PYTHONDONTWRITEBYTECODE=1
       - PYTHONUNBUFFERED=1
