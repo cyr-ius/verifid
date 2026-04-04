@@ -57,7 +57,7 @@
                 type="text"
                 class="form-control"
                 placeholder="Dupont"
-                [formField]="employeeForm.given_name"
+                [formField]="employeeForm.family_name"
               />
             </div>
 
@@ -125,7 +125,7 @@
           </div>
           <div class="card-body text-center py-4">
             <img
-              [src]="'data:image/png;base64,' + qrCode()"
+              [src]="qrCode()"
               alt="QR Code émission"
               class="img-fluid qr-image mb-3"
             />
@@ -149,11 +149,11 @@
           <div class="card-body">
             <ol class="list-group list-group-flush list-group-numbered">
               <li class="list-group-item border-0">
-                Montrez ce QR code au salarié ou envoyez-lui le lien mobile.
+                Montrez ce QR code ou envoyez-lui le lien mobile.
               </li>
               <li class="list-group-item border-0">
-                Le salarié ouvre <strong>Microsoft Authenticator</strong> et
-                scanne le code.
+                Ouvrir <strong>Microsoft Authenticator</strong> et scanne le
+                code.
               </li>
               <li class="list-group-item border-0">
                 Il accepte la réception du credential

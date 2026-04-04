@@ -38,7 +38,7 @@ class IssuanceResponse(BaseModel):
     request_id: str
     qr_code: str = Field(description="Base64 encoded QR code PNG image")
     url: str = Field(description="Deep link URL for Microsoft Authenticator")
-    expiry: str = ""
+    expiry: int = Field(description="Expiration time in ISO 8601 format")
 
 
 # ---------------------------------------------------------------------------

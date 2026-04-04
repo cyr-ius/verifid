@@ -16,14 +16,7 @@ logger = logging.getLogger(__name__)
 
 # MSAL scope for the Verified ID Request Service
 VC_SCOPE = "3db474b9-6a0c-4840-96ac-1fceb342124f/.default"
-VC_REQUEST_API_ENDPOINT = "https://verifiedid.did.msidentity.com/v1.0/tenants/"
-VC_CREDENTIAL_TYPE = "VerifiedEmployee"
-VC_MANIFEST_URL = (
-    f"{VC_REQUEST_API_ENDPOINT}"
-    f"{app_settings.AZURE_TENANT_ID}/verifiableCredentials/contracts/{VC_CREDENTIAL_TYPE}"
-)
-# https://verifiedid.did.msidentity.com/v1.0/tenants/8843852f-6bac-4b7e-a7e7-29e8136ec785/verifiableCredentials/contracts/128f389a-5308-c867-f1eb-dd417a288709/manifest
-
+VC_MANIFEST_URL = "https://verifiedid.did.msidentity.com/v1.0/tenants/8843852f-6bac-4b7e-a7e7-29e8136ec785/verifiableCredentials/contracts/128f389a-5308-c867-f1eb-dd417a288709/manifest"
 VC_ISSUANCE_API_ENDPOINT = "https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/createIssuanceRequest"
 VC_PRESENTATION_API_ENDPOINT = "https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/createPresentationRequest"
 
@@ -92,8 +85,8 @@ async def create_issuance_request(
             if app_settings.VC_API_KEY
             else {},
         },
-        "type": VC_CREDENTIAL_TYPE,
-        "manifestUrl": VC_MANIFEST_URL,
+        "type": "VerifiedEmployee",
+        "manifest": VC_MANIFEST_URL,
         "claims": {
             "employeeId": employee_id,
             "given_name": given_name,
@@ -157,7 +150,7 @@ async def create_presentation_request(session_id: str) -> PresentationResponse:
         },
         "requestedCredentials": [
             {
-                "type": VC_CREDENTIAL_TYPE,
+                "type": "VerifiedEmployee",
                 "acceptedIssuers": [app_settings.VC_AUTHORITY_DID],
                 "configuration": {
                     "validation": {
