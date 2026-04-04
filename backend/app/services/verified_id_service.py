@@ -31,11 +31,10 @@ def _get_access_token() -> str:
     Raises:
         RuntimeError: If token acquisition fails.
     """
-    authority = f"https://login.microsoftonline.com/{app_settings.AZURE_TENANT_ID}"
     msal_app = msal.ConfidentialClientApplication(
         client_id=app_settings.AZURE_CLIENT_ID,
         client_credential=app_settings.AZURE_CLIENT_SECRET,
-        authority=authority,
+        authority=app_settings.frontend_auth_authority,
     )
     raw_result = msal_app.acquire_token_for_client(scopes=[VC_SCOPE])
     result: dict[str, Any] = raw_result if isinstance(raw_result, dict) else {}
@@ -176,8 +175,6 @@ async def create_presentation_request(session_id: str) -> PresentationResponse:
         data = response.json()
 
     logger.info("Presentation request created: requestId=%s", data.get("requestId"))
-    logger.debug("Presentation request payload: %s", payload)
-    logger.debug("Presentation request response: %s", data)
     return PresentationResponse(
         request_id=data["requestId"],
         qr_code=data.get("qrCode", ""),

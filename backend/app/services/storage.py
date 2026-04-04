@@ -43,15 +43,6 @@ def assign_code(session_id):
     return code
 
 
-def update_session(session_id, data):
-    if session_id in sessions:
-        sessions[session_id].update(data)
-
-
-def get_session(session_id):
-    return sessions.get(session_id)
-
-
 def find_by_code(code):
     for session_id, data in sessions.items():
         if data.get("code") == code:
