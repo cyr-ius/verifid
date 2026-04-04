@@ -27,7 +27,7 @@ class Settings(BaseSettings):
 
     # Session / security
     SECRET_KEY: str = "change-me-in-production"
-    AUTH_ENABLED: bool = False
+    AUTH_ENABLED: bool = True
     AUTH_AUDIENCE: str = ""
     AUTH_ISSUERS: str = ""
     AUTH_OPENID_CONFIG_URL: str = ""
