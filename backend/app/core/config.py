@@ -26,7 +26,6 @@ class Settings(BaseSettings):
     CORS_ORIGINS: list[str] = ["http://localhost:4200"]
 
     # Session / security
-    SECRET_KEY: str = "change-me-in-production"
     AUTH_ENABLED: bool = True
     AUTH_AUDIENCE: str = ""
     AUTH_ISSUERS: str = ""
@@ -40,7 +39,7 @@ class Settings(BaseSettings):
     FRONTEND_AUTH_SCOPES: str = ""
 
     # Logo URL
-    LOGO_URL: str = "https://placehold.co/140x36/FFFFFF/122147?text=Verified+ID"
+    LOGO_URL: str = "https://placehold.co/140x36/FFFFFF/122147?text=Logo"
 
     # Verification ID Issuer request
     ISSUER_REQUEST: bool = True
