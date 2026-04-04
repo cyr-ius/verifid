@@ -15,7 +15,6 @@ services:
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - APP_BASE_URL=${APP_BASE_URL:-http://localhost:8000}
       - SWAGGER_ENABLE=${SWAGGER_ENABLE:-False}
-      - AUTH_ENABLED=${AUTH_ENABLED:-True}
       - AUTH_AUDIENCE=${AUTH_AUDIENCE:-api://default}
       - FRONTEND_AUTH_SCOPES=${FRONTEND_AUTH_SCOPES:-api://default/access_as_user}
       - FRONTEND_AUTH_CLIENT_ID=${FRONTEND_AUTH_CLIENT_ID}
