@@ -97,7 +97,7 @@ async def issue_credential(
 )
 async def issuance_callback(
     payload: IssuanceCallbackPayload,
-    api_key: str = Header(default="", alias="api-key"),
+    api_key: str = Header(alias="api-key"),
     _: bool = Depends(issuer_request),
 ) -> None:
     """
@@ -171,7 +171,7 @@ async def verify_credential(
 )
 async def presentation_callback(
     payload: PresentationCallbackPayload,
-    api_key: str = Header(default="", alias="api-key"),
+    api_key: str = Header(alias="api-key"),
 ) -> None:
     """
     Receives status updates from the Microsoft Verified ID service after
