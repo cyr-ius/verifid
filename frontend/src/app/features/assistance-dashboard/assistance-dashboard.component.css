@@ -1,0 +1,55 @@
+.dashboard-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f3f6fd 100%);
+}
+
+.code-input,
+.code-display {
+  letter-spacing: 0.2em;
+}
+
+.code-input {
+  font-weight: 700;
+}
+
+.status-panel {
+  background: #fff8e6;
+  border: 1px solid #f0d898;
+  border-radius: 1rem;
+  padding: 1rem;
+}
+
+.status-panel-success {
+  background: #eefaf3;
+  border-color: #a5d6b4;
+}
+
+.session-id {
+  font-family: monospace;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.verified-person {
+  background: linear-gradient(135deg, #eef4ff 0%, #f8fbff 100%);
+  border: 1px solid #d6e3ff;
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+}
+
+.verified-person-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #122147;
+}
+
+.empty-state {
+  border: 1px dashed #cfd6e4;
+  border-radius: 1rem;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  background: #f8faff;
+}
+
+.w-35 {
+  width: 35%;
+}

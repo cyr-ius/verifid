@@ -1,0 +1,176 @@
+<!-- HR Credential Issuance Page -->
+<div class="container py-4">
+  <div class="row mb-4">
+    <div class="col">
+      <h2 class="fw-bold">
+        <i class="bi bi-award me-2 text-primary"></i>
+        Émettre un credential salarié
+      </h2>
+      <p class="text-muted">
+        Remplissez les informations du salarié. Un QR code sera généré pour
+        qu'il enregistre son credential dans Microsoft Authenticator.
+      </p>
+    </div>
+  </div>
+
+  <!-- Employee form -->
+  @if (state() === "form" || state() === "error") {
+    <div class="card shadow-sm">
+      <div class="card-header">
+        <i class="bi bi-person-plus me-2"></i>Informations du salarié
+      </div>
+      <div class="card-body">
+        <form (submit)="onSubmit($event)">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold" for="employeeId">
+                Matricule salarié *
+              </label>
+              <input
+                id="employeeId"
+                type="text"
+                class="form-control"
+                placeholder="EMP-00123"
+                [formField]="employeeForm.employee_id"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold" for="givenName">
+                Prénom *
+              </label>
+              <input
+                id="givenName"
+                type="text"
+                class="form-control"
+                placeholder="Jean"
+                [formField]="employeeForm.given_name"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold" for="familyName">
+                Nom *
+              </label>
+              <input
+                id="familyName"
+                type="text"
+                class="form-control"
+                placeholder="Dupont"
+                [formField]="employeeForm.given_name"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold" for="jobTitle">
+                Poste *
+              </label>
+              <input
+                id="jobTitle"
+                type="text"
+                class="form-control"
+                placeholder="Développeur Senior"
+                [formField]="employeeForm.job_title"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label fw-semibold" for="department">
+                Département *
+              </label>
+              <input
+                id="department"
+                type="text"
+                class="form-control"
+                placeholder="Informatique"
+                [formField]="employeeForm.department"
+              />
+            </div>
+          </div>
+
+          @if (state() === "error") {
+            <div class="alert alert-danger mt-3">
+              <i class="bi bi-exclamation-triangle me-2"></i
+              >{{ errorMessage() }}
+            </div>
+          }
+
+          <div class="mt-4">
+            <button type="submit" class="btn btn-primary px-5">
+              <i class="bi bi-send me-2"></i>Émettre le credential
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <!-- Loading -->
+  @if (state() === "loading") {
+    <div class="card shadow-sm">
+      <div class="card-body text-center py-5">
+        <div class="spinner-border text-primary mb-3" role="status"></div>
+        <p class="text-muted">Création de la demande d'émission…</p>
+      </div>
+    </div>
+  }
+
+  <!-- QR code display -->
+  @if (state() === "qr") {
+    <div class="row g-4">
+      <div class="col-md-5">
+        <div class="card shadow-sm">
+          <div class="card-header bg-primary text-white">
+            <i class="bi bi-qr-code me-2"></i>QR Code d'enrôlement
+          </div>
+          <div class="card-body text-center py-4">
+            <img
+              [src]="'data:image/png;base64,' + qrCode()"
+              alt="QR Code émission"
+              class="img-fluid qr-image mb-3"
+            />
+            @if (deepLink()) {
+              <a
+                [href]="deepLink()"
+                class="btn btn-outline-primary btn-sm d-block"
+              >
+                <i class="bi bi-phone me-1"></i>Lien mobile
+              </a>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-7">
+        <div class="card shadow-sm h-100">
+          <div class="card-header">
+            <i class="bi bi-info-circle me-2"></i>Instructions
+          </div>
+          <div class="card-body">
+            <ol class="list-group list-group-flush list-group-numbered">
+              <li class="list-group-item border-0">
+                Montrez ce QR code au salarié ou envoyez-lui le lien mobile.
+              </li>
+              <li class="list-group-item border-0">
+                Le salarié ouvre <strong>Microsoft Authenticator</strong> et
+                scanne le code.
+              </li>
+              <li class="list-group-item border-0">
+                Il accepte la réception du credential
+                <strong>Employé vérifié</strong>.
+              </li>
+              <li class="list-group-item border-0">
+                Le credential est maintenant stocké dans son wallet et peut être
+                présenté au helpdesk.
+              </li>
+            </ol>
+            <button class="btn btn-outline-secondary mt-3" (click)="reset()">
+              <i class="bi bi-arrow-counterclockwise me-1"></i>
+              Émettre un autre credential
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

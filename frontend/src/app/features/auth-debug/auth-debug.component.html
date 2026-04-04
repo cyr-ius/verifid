@@ -1,0 +1,104 @@
+<div class="container py-4">
+  <div class="row mb-4">
+    <div class="col-lg-9">
+      <h2 class="fw-bold">
+        <i class="bi bi-key-fill me-2 text-primary"></i>
+        Mon accès
+      </h2>
+      <p class="text-muted mb-0">
+        Cette page appelle <code>/api/v1/status/me</code> et affiche exactement
+        ce que le backend reçoit dans votre token Entra ID.
+      </p>
+    </div>
+    <div class="col-lg-3 text-lg-end mt-3 mt-lg-0">
+      <button class="btn btn-primary" (click)="refresh()">
+        <i class="bi bi-arrow-repeat me-2"></i>Rafraîchir
+      </button>
+    </div>
+  </div>
+
+  @if (state() === "loading") {
+    <div class="card shadow-sm border-0">
+      <div class="card-body py-5 text-center">
+        <div class="spinner-border text-primary mb-3" role="status"></div>
+        <p class="text-muted mb-0">Lecture du token en cours…</p>
+      </div>
+    </div>
+  }
+
+  @if (state() === "error") {
+    <div class="alert alert-danger shadow-sm" role="alert">
+      <div class="fw-semibold mb-1">Impossible de lire le token</div>
+      <div>{{ errorMessage() }}</div>
+    </div>
+  }
+
+  @if (state() === "success" && principal(); as me) {
+    <div class="row g-4">
+      <div class="col-xl-5">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-body p-4">
+            <div class="mb-3">
+              <div class="small text-uppercase text-muted fw-semibold">
+                Utilisateur
+              </div>
+              <div class="fw-semibold">{{ me.name || "Non renseigné" }}</div>
+              <div class="text-muted small">
+                {{ me.preferred_username || "Non renseigné" }}
+              </div>
+            </div>
+            <div class="mb-3">
+              <div class="small text-uppercase text-muted fw-semibold">
+                Roles
+              </div>
+              @if (me.roles.length > 0) {
+                <div class="d-flex flex-wrap gap-2 mt-2">
+                  @for (role of me.roles; track role) {
+                    <span class="badge text-bg-success">{{ role }}</span>
+                  }
+                </div>
+              } @else {
+                <div class="text-muted">Aucun role dans le token</div>
+              }
+            </div>
+            <div class="mb-3">
+              <div class="small text-uppercase text-muted fw-semibold">
+                Scopes
+              </div>
+              <div class="token-box">
+                {{ me.scp || "Aucun scope dans le token" }}
+              </div>
+            </div>
+            <div class="mb-3">
+              <div class="small text-uppercase text-muted fw-semibold">
+                Audience
+              </div>
+              <div class="token-box">{{ me.aud || "Non renseignée" }}</div>
+            </div>
+            <div>
+              <div class="small text-uppercase text-muted fw-semibold">
+                Issuer
+              </div>
+              <div class="token-box">{{ me.iss || "Non renseigné" }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-7">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-header bg-white border-0 pt-4 px-4">
+            <h5 class="mb-1">Payload brut du token</h5>
+            <p class="text-muted mb-0">
+              Copiez ces informations si vous voulez que je vérifie les droits
+              avec vous.
+            </p>
+          </div>
+          <div class="card-body px-4 pb-4">
+            <pre class="payload-box mb-0">{{ formattedRaw() }}</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
