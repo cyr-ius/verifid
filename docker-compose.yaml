@@ -12,7 +12,6 @@ services:
       - AZURE_CLIENT_SECRET=${AZURE_CLIENT_SECRET:-change-me}
       - VC_AUTHORITY_DID=${VC_AUTHORITY_DID:-did:web:verifiedid.entra.microsoft.com:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
       - VC_API_KEY=${VC_API_KEY:-change-me}
-      - SECRET_KEY=${SECRET_KEY:-generate-a-secure-key}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - APP_BASE_URL=${APP_BASE_URL:-http://localhost:8000}
       - SWAGGER_ENABLE=${SWAGGER_ENABLE:-False}
