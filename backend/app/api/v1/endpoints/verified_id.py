@@ -190,7 +190,7 @@ async def presentation_callback(
     if payload.request_status == "presentation_verified":
         session["status"] = "success"
         session["claims"] = _extract_presented_claims(payload)
-        logger.info("Presentation verified for session %s", payload.state)
+        logger.debug("Presentation verified for session %s", payload.state)
     elif payload.request_status in ("presentation_error", "request_retrieved"):
         if payload.request_status == "presentation_error":
             session["status"] = "error"
