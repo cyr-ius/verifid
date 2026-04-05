@@ -35,8 +35,8 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     # Build CSP once at class level — one directive per list entry, auditable.
     _CSP_DIRECTIVES: list[str] = [
         "default-src 'self'",
-        "script-src 'self' 'unsafe-inline'",  # Angular requires unsafe-inline
-        "style-src 'self' 'unsafe-inline'",  # Bootstrap inline styles
+        "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",  # Angular requires unsafe-inline
+        "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",  # Bootstrap inline styles
         "img-src 'self' data: https:",  # logos, QR codes base64
         "font-src 'self' data:",  # Bootstrap Icons embedded font
         "connect-src 'self'"  # API calls + Azure endpoints
