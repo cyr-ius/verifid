@@ -1,7 +1,7 @@
 <!-- Top navigation bar -->
 <nav class="navbar app-navbar navbar-expand-lg navbar-dark shadow-sm">
   <div class="container">
-    <!-- Brand -->
+    <!-- Brand — short name on xs, full name from sm -->
     <a
       class="navbar-brand fw-bold d-flex align-items-center gap-2"
       routerLink="/"
@@ -11,14 +11,14 @@
       } @else {
         <i class="bi bi-shield-lock-fill"></i>
       }
-      <span>Verified ID Portal</span>
+      <span class="d-none d-sm-inline">Verified ID Portal</span>
+      <span class="d-inline d-sm-none">VerifID</span>
     </a>
 
     <!-- Mobile toggler -->
     <button
-      class="navbar-toggler"
+      class="navbar-toggler border-0"
       type="button"
-      data-bs-toggle="collapse"
       data-bs-toggle="collapse"
       data-bs-target="#mainNav"
       aria-controls="mainNav"
@@ -30,6 +30,9 @@
 
     <!-- Nav links -->
     <div class="collapse navbar-collapse" id="mainNav">
+      <!-- Visual separator on mobile expanded menu -->
+      <hr class="d-lg-none border-secondary my-2" />
+
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
         <li class="nav-item">
           <a
@@ -38,40 +41,56 @@
             routerLinkActive="active"
             aria-current="page"
           >
-            <i class="bi bi-shield-check me-1"></i>Vérification
+            <i class="bi bi-shield-check me-2"></i>Vérification
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link" routerLink="/assist" routerLinkActive="active">
-            <i class="bi bi-headset me-1"></i>Assistance
+            <i class="bi bi-headset me-2"></i>Assistance
           </a>
         </li>
         @if (issuer()) {
           <li class="nav-item">
             <a class="nav-link" routerLink="/issue" routerLinkActive="active">
-              <i class="bi bi-award me-1"></i>Émission (RH)
+              <i class="bi bi-award me-2"></i>Émission (RH)
             </a>
           </li>
         }
       </ul>
+
       @if (authService.isEnabled()) {
-        <div
-          class="navbar-text ms-lg-3 d-flex align-items-center gap-2 auth-box"
-        >
+        <hr class="d-lg-none border-secondary my-2" />
+        <div class="d-flex align-items-center gap-2 pb-2 pb-lg-0 ms-lg-3">
           @if (authService.isAuthenticated()) {
-            <span class="small text-white-50 auth-user">
-              <a class="nav-link" routerLink="/me" routerLinkActive="active">
-                <i class="bi bi-person-circle me-1"></i>
-                {{
-                  authService.account()?.name || authService.account()?.username
-                }}
-              ></a>
+            <!-- Desktop: truncated username -->
+            <span class="small text-white-50 auth-user d-none d-lg-inline">
+              <i class="bi bi-person-circle me-1"></i>
+              {{
+                authService.account()?.name || authService.account()?.username
+              }}
             </span>
-            <button class="btn btn-outline-light btn-sm" (click)="logout()">
+            <!-- Mobile expanded menu: full name as nav link -->
+            <a
+              class="nav-link d-lg-none"
+              routerLink="/me"
+              routerLinkActive="active"
+            >
+              <i class="bi bi-person-circle me-2"></i>
+              {{
+                authService.account()?.name || authService.account()?.username
+              }}
+            </a>
+            <button
+              class="btn btn-outline-light btn-sm w-100 w-lg-auto"
+              (click)="logout()"
+            >
               Se déconnecter
             </button>
           } @else if (showLoginAction()) {
-            <button class="btn btn-light btn-sm" (click)="login()">
+            <button
+              class="btn btn-light btn-sm w-100 w-lg-auto"
+              (click)="login()"
+            >
               Se connecter
             </button>
           }
@@ -86,8 +105,9 @@
   <router-outlet />
 </main>
 
-<!-- Footer -->
+<!-- Footer — title hidden on xs to save space -->
 <footer class="bg-white border-top py-3 text-center text-muted small">
   <i class="bi bi-shield-lock me-1"></i>
-  Propulsé par Microsoft Entra Verified ID &nbsp;|&nbsp; {{ title }}
+  Microsoft Entra Verified ID
+  <span class="d-none d-sm-inline">&nbsp;|&nbsp;{{ title }}</span>
 </footer>

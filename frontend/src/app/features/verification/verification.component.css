@@ -1,10 +1,98 @@
+/* ── QR image ───────────────────────────────────────────────────────── */
+
+/* Mobile first: QR fills available width up to 300px */
 .qr-image {
-  max-width: 260px;
-  border: 4px solid #e9ecef;
-  border-radius: 8px;
-  padding: 8px;
+  width: min(300px, 100%);
+  border: 6px solid #e9ecef;
+  border-radius: 12px;
+  padding: 10px;
+  display: block;
+  margin: 0 auto;
 }
 
-.tracking-code {
-  letter-spacing: 0.18em;
+@media (min-width: 768px) {
+  .qr-image {
+    width: 260px;
+  }
+}
+
+/* ── Assistance code ────────────────────────────────────────────────── */
+
+.assistance-code-block {
+  background: #f0f4ff;
+  border: 2px solid #c7d6ff;
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+}
+
+.assistance-code-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #6c757d;
+  margin-bottom: 0.25rem;
+}
+
+/* clamp() ensures the code scales with screen width and is always readable */
+.assistance-code-digits {
+  font-size: clamp(2.8rem, 14vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: 0.35em;
+  color: #122147;
+  line-height: 1.1;
+}
+
+.assistance-code-hint {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-top: 0.35rem;
+}
+
+/* ── Tap-friendly buttons ───────────────────────────────────────────── */
+
+/* 48px min-height exceeds WCAG 2.5.5 (44px) tap target requirement */
+.btn-tap {
+  min-height: 48px;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 0.6rem;
+}
+
+/* ── Polling indicator ──────────────────────────────────────────────── */
+
+.polling-badge {
+  background: #e8f4fd;
+  border: 1px solid #b6d9f5;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  color: #0c5a8e;
+}
+
+/* ── Step instructions ──────────────────────────────────────────────── */
+
+.step-list .list-group-item {
+  font-size: 1rem;
+  line-height: 1.55;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f0f0f0 !important;
+}
+
+.step-list .list-group-item:last-child {
+  border-bottom: none !important;
+}
+
+/* ── Claims table ───────────────────────────────────────────────────── */
+
+.claims-table th,
+.claims-table td {
+  font-size: 0.95rem;
+  padding: 0.6rem 0.75rem;
+  vertical-align: middle;
+}
+
+.claims-table th {
+  width: 42%;
+  font-weight: 600;
 }

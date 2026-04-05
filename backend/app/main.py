@@ -21,6 +21,7 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
 )
 
+# Resolve once at module load — avoids repeated filesystem calls per request.
 project_root = Path(__file__).resolve().parents[2]
 frontend_dist = (project_root / "frontend").resolve()
 frontend_index = frontend_dist / "index.html"
@@ -28,6 +29,21 @@ frontend_index = frontend_dist / "index.html"
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     """Add security headers to every HTTP response."""
+
+    # Build CSP once at class level — one directive per list entry, auditable.
+    _CSP_DIRECTIVES: list[str] = [
+        "default-src 'self'",
+        "script-src 'self' 'unsafe-inline'",  # Angular requires unsafe-inline
+        "style-src 'self' 'unsafe-inline'",  # Bootstrap inline styles
+        "img-src 'self' data: https:",  # logos, QR codes base64
+        "font-src 'self' data:",  # Bootstrap Icons embedded font
+        "connect-src 'self'"  # API calls + Azure endpoints
+        " https://login.microsoftonline.com"  # MSAL auth
+        " https://verifiedid.did.msidentity.com",  # Verified ID service
+        "worker-src 'self'",  # Angular Service Worker (PWA)
+        "frame-ancestors 'none'",  # replaces X-Frame-Options
+    ]
+    _CSP: str = "; ".join(_CSP_DIRECTIVES) + ";"
 
     async def dispatch(self, request: Request, call_next):
         response = await call_next(request)
@@ -41,16 +57,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["Strict-Transport-Security"] = (
             "max-age=31536000; includeSubDomains"
         )
-        response.headers["Content-Security-Policy"] = (
-            "default-src 'self'; "
-            "script-src 'self' 'unsafe-inline'; "
-            "style-src 'self' 'unsafe-inline'; "
-            "img-src 'self' data: https:; "
-            "font-src 'self' data:; "
-            "connect-src 'self' https://login.microsoftonline.com "
-            "https://verifiedid.did.msidentity.com; "
-            "frame-ancestors 'none';"
-        )
+        response.headers["Content-Security-Policy"] = self._CSP
         return response
 
 
@@ -76,7 +83,7 @@ def _resolve_safe_path(full_path: str) -> Path | None:
     if not stripped or stripped in (".", ".."):
         return None
 
-    # Resolve to absolute path — this collapses all '..' and symlinks.
+    # Resolve to absolute path — collapses all '..' and symlinks.
     candidate = (frontend_dist / stripped).resolve()
 
     # The candidate must be strictly inside frontend_dist (not equal to it).
@@ -87,7 +94,9 @@ def _resolve_safe_path(full_path: str) -> Path | None:
 
     if not candidate.is_relative_to(frontend_dist):
         logger.warning(
-            "Path traversal attempt blocked: raw=%r resolved=%s", full_path, candidate
+            "Path traversal attempt blocked: raw=%r resolved=%s",
+            full_path,
+            candidate,
         )
         return None
 

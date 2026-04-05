@@ -1,31 +1,31 @@
 <!-- Helpdesk Identity Verification Page -->
-<div class="container py-4">
-  <!-- Page header -->
-  <div class="row mb-4">
-    <div class="col">
-      <h2 class="fw-bold">
-        <i class="bi bi-shield-check me-2 text-primary"></i>
-        Vérification d'identité
-      </h2>
-      <p class="text-muted">
-        Merci de vous munir de votre téléphone pour scanner le QR code avec
-        Microsoft Authenticator pour prouver son identité.
-      </p>
-    </div>
+<div class="container py-3 py-md-4">
+  <!-- ── Page header ──────────────────────────────────────────────────── -->
+  <div class="mb-3 mb-md-4">
+    <h2 class="fw-bold mb-1">
+      <i class="bi bi-shield-check me-2 text-primary"></i>Vérification
+      d'identité
+    </h2>
+    <p class="text-muted mb-0 small d-none d-sm-block">
+      Scannez le QR code avec Microsoft Authenticator pour prouver votre
+      identité.
+    </p>
   </div>
 
-  <!-- IDLE state: call to action -->
+  <!-- ── IDLE state ───────────────────────────────────────────────────── -->
   @if (state() === "idle") {
     <div class="card shadow-sm">
-      <div class="card-body text-center py-5">
-        <i class="bi bi-person-badge display-1 text-secondary mb-3"></i>
-        <h4 class="mb-3">Prêt à vérifier une identité</h4>
+      <div class="card-body text-center py-5 px-3">
+        <i
+          class="bi bi-person-badge text-secondary mb-3"
+          style="font-size: 3.5rem"
+        ></i>
+        <h4 class="mb-2">Prêt à vérifier</h4>
         <p class="text-muted mb-4">
-          Cliquez sur le bouton ci-dessous pour générer un QR code de
-          vérification.
+          Appuyez sur le bouton pour générer un QR code de vérification.
         </p>
         <button
-          class="btn btn-primary btn-lg px-5"
+          class="btn btn-primary btn-tap w-100"
           (click)="startVerification()"
         >
           <i class="bi bi-qr-code me-2"></i>Démarrer la vérification
@@ -34,92 +34,95 @@
     </div>
   }
 
-  <!-- LOADING state -->
+  <!-- ── LOADING state ────────────────────────────────────────────────── -->
   @if (state() === "loading") {
     <div class="card shadow-sm">
       <div class="card-body text-center py-5">
         <div class="spinner-border text-primary mb-3" role="status">
           <span class="visually-hidden">Chargement...</span>
         </div>
-        <p class="text-muted">Génération du QR code en cours…</p>
+        <p class="text-muted mb-0">Génération du QR code…</p>
       </div>
     </div>
   }
 
-  <!-- QR state: display QR code and polling indicator -->
+  <!-- ── QR state ─────────────────────────────────────────────────────── -->
   @if (state() === "qr") {
-    <div class="row g-4">
-      <!-- QR code card -->
-      <div class="col-md-6">
+    <!-- Mobile: stacked (QR first, instructions below) -->
+    <!-- Desktop md+: side by side -->
+    <div class="row g-3 g-md-4">
+      <!-- QR code + assistance code -->
+      <div class="col-12 col-md-6">
         <div class="card shadow-sm h-100">
-          <div class="card-header bg-primary text-white">
+          <div class="card-header bg-primary text-white py-2">
             <i class="bi bi-qr-code me-2"></i>QR Code de vérification
           </div>
-          <div class="card-body text-center py-4">
-            <img
-              [src]="qrCode()"
-              alt="QR Code Verified ID"
-              class="img-fluid qr-image mb-3"
-            />
-            <p class="text-muted small">
-              Valable quelques minutes — actualisez si expiré.
-            </p>
-            <div class="alert alert-secondary text-start mt-3" role="alert">
-              <div class="fw-semibold mb-1">
-                <i class="bi bi-person-vcard me-2"></i>Code d'assistance
-              </div>
-              <div class="fs-3 fw-bold tracking-code">
-                {{ assistanceCode() }}
-              </div>
-              <div class="small text-muted">
-                Communiquez ce code au service d'assistance pour retrouver le
-                dossier.
+          <div
+            class="card-body d-flex flex-column align-items-center gap-3 py-3"
+          >
+            <img [src]="qrCode()" alt="QR Code Verified ID" class="qr-image" />
+
+            <!-- Assistance code — maximum visual priority -->
+            <div class="assistance-code-block w-100 text-center">
+              <div class="assistance-code-label">Code d'assistance</div>
+              <div class="assistance-code-digits">{{ assistanceCode() }}</div>
+              <div class="assistance-code-hint">
+                Communiquez ce code au support
               </div>
             </div>
+
             @if (deepLink()) {
-              <a [href]="deepLink()" class="btn btn-outline-primary btn-sm">
-                <i class="bi bi-phone me-1"></i>Ouvrir sur mobile
+              <a
+                [href]="deepLink()"
+                class="btn btn-outline-primary btn-tap w-100"
+              >
+                <i class="bi bi-phone me-2"></i>Ouvrir sur ce téléphone
               </a>
             }
           </div>
         </div>
       </div>
 
-      <!-- Instructions card -->
-      <div class="col-md-6">
+      <!-- Instructions + polling indicator -->
+      <div class="col-12 col-md-6">
         <div class="card shadow-sm h-100">
-          <div class="card-header">
+          <div class="card-header py-2">
             <i class="bi bi-list-ol me-2"></i>Instructions pour le salarié
           </div>
-          <div class="card-body">
-            <ol class="list-group list-group-flush list-group-numbered">
-              <li class="list-group-item border-0">
+          <div class="card-body d-flex flex-column gap-3 py-3">
+            <ol
+              class="list-group list-group-flush list-group-numbered step-list mb-0"
+            >
+              <li class="list-group-item border-0 px-0">
                 Ouvrir <strong>Microsoft Authenticator</strong> sur votre
                 smartphone.
               </li>
-              <li class="list-group-item border-0">
+              <li class="list-group-item border-0 px-0">
                 Appuyer sur <strong>Scanner un QR code</strong> ou utiliser le
-                lien mobile ci-dessus.
+                lien ci-dessus.
               </li>
-              <li class="list-group-item border-0">
-                Sélectionner votre credential <strong>Employé vérifié</strong>
-                et confirmer le partage.
+              <li class="list-group-item border-0 px-0">
+                Sélectionner le credential <strong>Employé vérifié</strong> et
+                confirmer le partage.
               </li>
             </ol>
 
             <!-- Polling indicator -->
             <div
-              class="alert alert-info mt-4 d-flex align-items-center"
-              role="alert"
+              class="polling-badge d-flex align-items-center gap-2"
+              role="status"
             >
               <div
-                class="spinner-border spinner-border-sm me-2"
-                role="status"
+                class="spinner-border spinner-border-sm flex-shrink-0"
+                aria-hidden="true"
               ></div>
-              En attente de la présentation du credential…
+              <span>En attente de la présentation du credential…</span>
             </div>
 
-            <button class="btn btn-outline-secondary btn-sm" (click)="reset()">
+            <button
+              class="btn btn-outline-secondary btn-tap w-100 mt-auto"
+              (click)="reset()"
+            >
               <i class="bi bi-arrow-counterclockwise me-1"></i>Annuler
             </button>
           </div>
@@ -128,50 +131,52 @@
     </div>
   }
 
-  <!-- SUCCESS state: show verified claims -->
+  <!-- ── SUCCESS state ────────────────────────────────────────────────── -->
   @if (state() === "success") {
     <div class="card shadow-sm border-success">
-      <div class="card-header bg-success text-white">
+      <div class="card-header bg-success text-white py-2">
         <i class="bi bi-check-circle-fill me-2"></i>Identité vérifiée avec
         succès
       </div>
-      <div class="card-body">
+      <div class="card-body py-3">
         <p class="text-muted mb-3">
           La personne a présenté un credential valide. Informations vérifiées :
         </p>
 
         @if (verifiedClaims(); as claims) {
-          <table class="table table-bordered table-hover">
-            <tbody>
-              @for (entry of claims | keyvalue; track entry.key) {
-                <tr>
-                  <th class="table-light text-capitalize" style="width: 35%">
-                    {{ entry.key | titlecase }}
-                  </th>
-                  <td>{{ entry.value }}</td>
-                </tr>
-              }
-            </tbody>
-          </table>
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover claims-table mb-0">
+              <tbody>
+                @for (entry of claims | keyvalue; track entry.key) {
+                  <tr>
+                    <th class="table-light text-capitalize">
+                      {{ entry.key | titlecase }}
+                    </th>
+                    <td>{{ entry.value }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
         }
 
-        <button class="btn btn-primary mt-2" (click)="reset()">
+        <button class="btn btn-primary btn-tap w-100 mt-3" (click)="reset()">
           <i class="bi bi-arrow-repeat me-2"></i>Nouvelle vérification
         </button>
       </div>
     </div>
   }
 
-  <!-- ERROR state -->
+  <!-- ── ERROR state ──────────────────────────────────────────────────── -->
   @if (state() === "error") {
     <div class="card shadow-sm border-danger">
-      <div class="card-header bg-danger text-white">
+      <div class="card-header bg-danger text-white py-2">
         <i class="bi bi-exclamation-triangle-fill me-2"></i>Échec de la
         vérification
       </div>
-      <div class="card-body">
-        <p class="text-danger">{{ errorMessage() }}</p>
-        <button class="btn btn-outline-danger" (click)="reset()">
+      <div class="card-body py-3">
+        <p class="text-danger mb-3">{{ errorMessage() }}</p>
+        <button class="btn btn-outline-danger btn-tap w-100" (click)="reset()">
           <i class="bi bi-arrow-repeat me-2"></i>Réessayer
         </button>
       </div>

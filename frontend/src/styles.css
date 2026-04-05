@@ -3,3 +3,83 @@
   --bs-primary-rgb: 18, 33, 71;
   --bs-blue: #122147;
 }
+
+/* ── Mobile-first base ──────────────────────────────────────────────── */
+
+/* Minimum tap target size: 48px (exceeds WCAG 2.5.5 minimum of 44px) */
+.btn {
+  min-height: 48px;
+  padding: 0.6rem 1.25rem;
+  font-size: 1rem;
+}
+
+.btn-lg {
+  min-height: 52px;
+  font-size: 1.05rem;
+}
+
+.btn-sm {
+  min-height: 36px;
+}
+
+/* Form controls */
+.form-control,
+.form-select {
+  min-height: 48px;
+  font-size: 1rem;
+}
+
+/* Nav links easier to tap */
+.nav-link {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0.6rem 0.75rem;
+}
+
+/* Tables don't overflow on small screens */
+.table-responsive {
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 575.98px) {
+  .card-body {
+    padding: 1rem;
+  }
+
+  .card-header {
+    padding: 0.75rem 1rem;
+  }
+
+  h2 {
+    font-size: 1.35rem;
+  }
+
+  h5 {
+    font-size: 1.05rem;
+  }
+
+  /* Reduce container horizontal padding on very small screens */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .py-4 {
+    padding-top: 1.25rem !important;
+    padding-bottom: 1.25rem !important;
+  }
+}
+
+/* Responsive width utilities not included in Bootstrap by default */
+@media (min-width: 576px) {
+  .w-sm-auto {
+    width: auto !important;
+  }
+}
+
+@media (min-width: 992px) {
+  .w-lg-auto {
+    width: auto !important;
+  }
+}
