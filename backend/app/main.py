@@ -62,7 +62,6 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["Content-Security-Policy"] = self._CSP
         return response
 
-
 def _resolve_safe_path(full_path: str) -> Path | None:
     """
     Resolve a URL path to a filesystem path safely.
@@ -108,14 +107,12 @@ def _resolve_safe_path(full_path: str) -> Path | None:
 
     return candidate
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan events."""
     logger.info("Starting Verified ID application...")
     yield
     logger.info("Shutting down Verified ID application...")
-
 
 app = FastAPI(
     title="Employee Verified ID API",
@@ -140,24 +137,10 @@ app.add_middleware(
 
 app.include_router(api_router, prefix="/api/v1")
 
-
 @app.get("/api/health")
 async def health_check() -> dict:
     """Health check endpoint."""
     return {"status": "healthy", "service": "VerifID API"}
-
-
-@app.get("/favicon.ico", include_in_schema=False)
-async def favicon() -> FileResponse:
-    """Serve the application favicon from the Angular build output."""
-    safe = _resolve_safe_path("favicon.ico")
-    if safe is None:
-        raise HTTPException(status_code=404, detail="Favicon not found.")
-    return FileResponse(safe, media_type="image/x-icon")
-
-
-app.mount("/assets", StaticFiles(directory=frontend_public, html=True), name="assets")
-
 
 @app.get("/{full_path:path}", include_in_schema=False)
 async def serve_spa(full_path: str) -> FileResponse:
