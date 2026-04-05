@@ -8,6 +8,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -119,7 +120,7 @@ app = FastAPI(
     description="API for verifying employee identity using Microsoft Entra Verified ID",
     version="1.0.0",
     lifespan=lifespan,
-    docs_url="/api/docs" if app_settings.SWAGGER_ENABLE else None,
+    docs_url=None,
     openapi_url="/api/openapi.json" if app_settings.SWAGGER_ENABLE else None,
 )
 
@@ -136,6 +137,14 @@ app.add_middleware(
 )
 
 app.include_router(api_router, prefix="/api/v1")
+
+@app.get("/api/docs", include_in_schema=False)
+async def swagger_ui():
+    return get_swagger_ui_html(
+        openapi_url="/api/openapi.json",
+        title="Employee Verified ID API",
+        swagger_favicon_url="/favicon.ico",
+    )
 
 @app.get("/api/health")
 async def health_check() -> dict:
