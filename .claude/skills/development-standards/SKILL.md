@@ -46,14 +46,14 @@ bootstrapApplication(AppComponent, appConfig);
 
 ```typescript
 // src/app/app.config.ts - Application configuration
-import { ApplicationConfig, provideZoneChangeDetection } from "@angular/core";
+import { ApplicationConfig, provideZonelessChangeDetection } from "@angular/core";
 import { provideRouter } from "@angular/router";
 import { provideHttpClient } from "@angular/common/http";
 
 export const appConfig: ApplicationConfig = {
   providers: [
     // ✅ Enable zoneless mode for better performance
-    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideZonelessChangeDetection(),
     provideRouter(routes),
     provideHttpClient(),
   ],
@@ -1007,6 +1007,7 @@ async def delete_user(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to delete user"
         )
+
 ```
 
 ### 4. Services Asynchrones
@@ -1128,13 +1129,13 @@ class RegistryService:
         """Execute Trivy vulnerability scan."""
         # Implementation with subprocess or API call
         pass
+
 ```
 
 ### 5. Gestion Configuration (Variables d'environnement)
 
 ```python
 from pydantic_settings import BaseSettings
-from typing import Optional
 
 class Settings(BaseSettings):
     """
@@ -1161,12 +1162,12 @@ class Settings(BaseSettings):
 
     # Registry
     registry_url: str = "http://localhost:5000"
-    registry_username: Optional[str] = None
-    registry_password: Optional[str] = None
+    registry_username: str | None = None
+    registry_password: str | None = None
 
     # Docker Hub (for staging)
-    dockerhub_username: Optional[str] = None
-    dockerhub_token: Optional[str] = None
+    dockerhub_username: str | None = None
+    dockerhub_token: str | None = None
 
     # Vulnerability scanning
     vuln_scan_enabled: bool = True
@@ -1203,6 +1204,7 @@ class Settings(BaseSettings):
 
 # Singleton instance
 settings = Settings()
+
 ```
 
 **Fichier `.env` pour conteneur:**
@@ -1239,6 +1241,7 @@ LOG_LEVEL=INFO
 
 # CORS
 CORS_ORIGINS=*
+
 ```
 
 ### 6. Exception Handling
@@ -1317,6 +1320,7 @@ async def conflict_handler(request, exc):
         status_code=exc.status_code,
         content={"detail": exc.detail}
     )
+
 ```
 
 ---
@@ -1340,7 +1344,7 @@ RUN npm run build -- --configuration production
 FROM python:3.14-slim as backend_builder
 WORKDIR /app/backend
 COPY backend/requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+RUN uv pip install --no-cache-dir -r requirements.txt
 
 # Stage 3: Runtime
 FROM python:3.14-slim
