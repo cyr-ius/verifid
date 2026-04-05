@@ -26,7 +26,6 @@ logging.basicConfig(
 # Resolve once at module load — avoids repeated filesystem calls per request.
 project_root = Path(__file__).resolve().parents[2]
 frontend_dist = (project_root / "frontend").resolve()
-frontend_public = (project_root / "frontend/public").resolve()
 frontend_index = frontend_dist / "index.html"
 
 
