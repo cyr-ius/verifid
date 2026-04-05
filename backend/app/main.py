@@ -9,6 +9,7 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 
@@ -24,6 +25,7 @@ logging.basicConfig(
 # Resolve once at module load — avoids repeated filesystem calls per request.
 project_root = Path(__file__).resolve().parents[2]
 frontend_dist = (project_root / "frontend").resolve()
+frontend_public = (project_root / "frontend/public").resolve()
 frontend_index = frontend_dist / "index.html"
 
 
@@ -152,6 +154,9 @@ async def favicon() -> FileResponse:
     if safe is None:
         raise HTTPException(status_code=404, detail="Favicon not found.")
     return FileResponse(safe, media_type="image/x-icon")
+
+
+app.mount("/assets", StaticFiles(directory=frontend_public, html=True), name="assets")
 
 
 @app.get("/{full_path:path}", include_in_schema=False)
