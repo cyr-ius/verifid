@@ -39,6 +39,8 @@ RUN --mount=type=bind,source=backend/pyproject.toml,target=pyproject.toml \
     uv sync --frozen --no-dev
 
 COPY --from=frontend-builder /build/frontend/dist/verifid/browser ./frontend
+COPY --from=frontend-builder /build/frontend/node_modules/swagger-ui-dist/swagger-ui-bundle.js ./frontend/docs-assets/swagger-ui-bundle.js
+COPY --from=frontend-builder /build/frontend/node_modules/swagger-ui-dist/swagger-ui.css ./frontend/docs-assets/swagger-ui.css
 
 COPY backend/ ./backend
 

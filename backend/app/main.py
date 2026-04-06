@@ -122,6 +122,8 @@ async def swagger_ui():
     return get_swagger_ui_html(
         openapi_url="/api/openapi.json",
         title="Employee Verified ID API",
+        swagger_js_url="/docs-assets/swagger-ui-bundle.js",
+        swagger_css_url="/docs-assets/swagger-ui.css",
         swagger_favicon_url="/favicon.ico",
     )
 
