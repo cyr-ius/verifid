@@ -67,7 +67,7 @@ class Settings(BaseSettings):
             value.strip() for value in self.AUTH_AUDIENCE.split(",") if value.strip()
         ]
         return [f"{audience}/{self.AUTH_SCOPE}" for audience in audiences] or [
-            f"{self.AZURE_CLIENT_ID}/{self.AUTH_SCOPE}"
+            f"api://{self.AZURE_CLIENT_ID}/{self.AUTH_SCOPE}"
         ]
 
 
