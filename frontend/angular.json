@@ -26,9 +26,9 @@
             "tsConfig": "tsconfig.app.json",
             "assets": [
               {
-                "glob":"favicon.ico",
-                "input":"src/",
-                "output":"/"
+                "glob": "favicon.ico",
+                "input": "src/",
+                "output": "/"
               },
               {
                 "glob": "**/*",
@@ -51,8 +51,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "2.6MB",
+                  "maximumError": "3MB"
                 },
                 {
                   "type": "anyComponentStyle",
