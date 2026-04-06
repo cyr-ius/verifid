@@ -92,7 +92,7 @@ docker run -d \
   -e VERIFIED_ID_DID=did:web:yourdomain.com \
   -e APP_BASE_URL=https://yourdomain.com \
   -e API_KEY=your-api-key \
-  -v verifid_data:/data \
+  -e AUTH_CLIENT_ID=xxxxxxx-xxx-xxxx-xxxx-xxxxxxxxxxxx \
   ghcr.io/cyr-ius/verifid:latest
 ```
 
@@ -115,11 +115,7 @@ services:
       - VERIFIED_ID_DID=${VERIFIED_ID_DID}
       - APP_BASE_URL=${APP_BASE_URL}
       - API_KEY=${API_KEY}
-    volumes:
-      - verifid_data:/data
-
-volumes:
-  verifid_data:
+      - AUTH_CLIENT_ID=${AUTH_CLIENT_ID}
 ```
 
 Then create a `.env` file from the provided example:
@@ -159,11 +155,12 @@ docker compose up -d
 | Variable              | Description                                                                    |
 | --------------------- | ------------------------------------------------------------------------------ |
 | `AZURE_TENANT_ID`     | Azure Active Directory tenant ID                                               |
-| `AZURE_CLIENT_ID`     | Client ID of the **Backend API** app registration                              |
+| `AZURE_CLIENT_ID`     | Client ID of the **Backend API** app registration  (Verif ID API interface)    |
 | `AZURE_CLIENT_SECRET` | Client secret for the backend app registration                                 |
 | `VERIFIED_ID_DID`     | Your Verified ID authority DID (e.g. `did:web:yourdomain.com`)                 |
 | `APP_BASE_URL`        | Public HTTPS base URL of the application — used by Microsoft to POST callbacks |
 | `API_KEY`             | Shared secret that Microsoft must include in callback headers                  |
+| `AUTH_CLIENT_ID`.     | Client ID of the **Frontend SPA** app registration (Verif ID interface)        |           
 
 ### Authentication
 
@@ -173,12 +170,6 @@ docker compose up -d
 | `AUTH_AUDIENCE`                 | Comma-separated accepted JWT audiences           | `AZURE_CLIENT_ID` |
 | `AUTH_SCOPE                   ` | Delegated scope accepted for helpdesk access     | `access_as_user`  |
 | `AUTH_JWKS_CACHE_TTL_SECONDS`   | Time to cache JWKS keys (reduce latency)         | `3600`            |
-
-### Frontend Entra ID Configuration
-
-| Variable         | Description                                        | Default |
-| ---------------- | -------------------------------------------------- | ------- |
-| `AUTH_CLIENT_ID` | Client ID of the **Frontend SPA** app registration | —       |
 
 ### Feature Flags
 
@@ -340,7 +331,7 @@ Roles are assigned via **Enterprise Applications**, not App Registrations.
 | Purpose                                    | App Registration         | Key values                                                     |
 | ------------------------------------------ | ------------------------ | -------------------------------------------------------------- |
 | Backend token acquisition & JWT validation | `VerifID – Backend API`  | `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AUTH_AUDIENCE`      |
-| Frontend user sign-in (MSAL)               | `VerifID – Frontend SPA` | `AUTH_CLIENT_ID` , `AUTH_SCOPE`, `AUTH_JWKS_CACHE_TTL_SECONDS` |
+| Frontend user sign-in (MSAL)               | `VerifID – Frontend SPA` | `AUTH_CLIENT_ID`                                               |
 
 ---
 
@@ -349,7 +340,6 @@ Roles are assigned via **Enterprise Applications**, not App Registrations.
 | Role / Scope                       | Grants access to                                                |
 | ---------------------------------- | --------------------------------------------------------------- |
 | `helpdesk` (app role)              | `/api/v1/verified-id/assist/{code}`                             |
-| `access_as_user` (delegated scope) | `/api/v1/verified-id/assist/{code}` _(alternative to the role)_ |
 | `hr` (app role)                    | `/api/v1/verified-id/issue`                                     |
 | _(no auth)_                        | `/verify` page and `/api/v1/verified-id/verify`                 |
 
