@@ -4,8 +4,16 @@ __pycache__/
 venv/
 .venv/
 .env
-*.env.local
+.env.local
+.env.example
 *.egg-info/
 dist/
 .angular/
 node_modules/
+*/.env
+*/.env.example
+*/venv/
+*/.venv/
+*/node_modules/
+*/dist/
+*/.angular/

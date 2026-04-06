@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     AUTH_AUDIENCE: str  # e.g. api://your-api-audience, can be comma-separated for multiple audiences
     AUTH_JWKS_CACHE_TTL_SECONDS: int = 3600
     AUTH_SCOPE: str = "access_as_user"  # Scope for frontend authentication
-    LOGO_URL: str = "/static/logo.png"  # URL to the logo image
+    LOGO_URL: str = "/icons/icon-128x128.png"  # URL to the logo image
     LOG_LEVEL: str = "INFO"  # Logging level (e.g. DEBUG, INFO, WARNING, ERROR)
     SWAGGER_ENABLE: bool = False  # Whether to enable Swagger UI for API documentation
 
