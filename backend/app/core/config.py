@@ -21,7 +21,6 @@ class Settings(BaseSettings):
     VERIFIED_ID_DID: str  # did:web:yourdomain.com
     APP_BASE_URL: str  # e.g. https://yourdomain.com
     API_KEY: str  # API key for callbacks
-    CORS_ORIGINS: list[str] = ["http://localhost:4200"]
     AUTH_ENABLED: bool = True  # Whether to enable authentication (set to False for development without auth)
     AUTH_CLIENT_ID: str  # e.g. frontend-app-client-id
     AUTH_AUDIENCE: str  # e.g. api://your-api-audience, can be comma-separated for multiple audiences
