@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 
 # MSAL scope for the Verified ID Request Service
 VC_SCOPE = "3db474b9-6a0c-4840-96ac-1fceb342124f/.default"
-VC_MANIFEST_URL = "https://verifiedid.did.msidentity.com/v1.0/tenants/8843852f-6bac-4b7e-a7e7-29e8136ec785/verifiableCredentials/contracts/128f389a-5308-c867-f1eb-dd417a288709/manifest"
 VC_ISSUANCE_API_ENDPOINT = "https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/createIssuanceRequest"
 VC_PRESENTATION_API_ENDPOINT = "https://verifiedid.did.msidentity.com/v1.0/verifiableCredentials/createPresentationRequest"
 
@@ -85,7 +84,7 @@ async def create_issuance_request(
             else {},
         },
         "type": "VerifiedEmployee",
-        "manifest": VC_MANIFEST_URL,
+        "manifest": app_settings.verified_id_manifest_url,
         "claims": {
             "employeeId": employee_id,
             "given_name": given_name,

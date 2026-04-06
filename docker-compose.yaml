@@ -11,6 +11,7 @@ services:
       - AZURE_CLIENT_ID=${AZURE_CLIENT_ID:-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
       - AZURE_CLIENT_SECRET=${AZURE_CLIENT_SECRET:-change-me}
       - VERIFIED_ID_DID=${VERIFIED_ID_DID:-did:web:verifiedid.entra.microsoft.com:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
+      - VERIFIED_ID_CONTRACT_ID=${VERIFIED_ID_CONTRACT_ID:-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
       - APP_BASE_URL=${APP_BASE_URL:-http://localhost:8000}
       - API_KEY=${API_KEY:-change-me}
       - AUTH_AUDIENCE=${AUTH_AUDIENCE:-api://default}
