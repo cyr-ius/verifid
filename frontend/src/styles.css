@@ -7,7 +7,7 @@
 /* ── Mobile-first base ──────────────────────────────────────────────── */
 
 /* Minimum tap target size: 48px (exceeds WCAG 2.5.5 minimum of 44px) */
-.btn {
+/* .btn {
   min-height: 48px;
   padding: 0.6rem 1.25rem;
   font-size: 1rem;
@@ -20,7 +20,7 @@
 
 .btn-sm {
   min-height: 36px;
-}
+} */
 
 /* Form controls */
 .form-control,
