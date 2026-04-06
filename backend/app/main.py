@@ -10,7 +10,6 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.responses import FileResponse
-from fastapi.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 
@@ -62,6 +61,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["Content-Security-Policy"] = self._CSP
         return response
 
+
 def _resolve_safe_path(full_path: str) -> Path | None:
     """
     Resolve a URL path to a filesystem path safely.
@@ -107,12 +107,14 @@ def _resolve_safe_path(full_path: str) -> Path | None:
 
     return candidate
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan events."""
     logger.info("Starting Verified ID application...")
     yield
     logger.info("Shutting down Verified ID application...")
+
 
 app = FastAPI(
     title="Employee Verified ID API",
@@ -137,6 +139,7 @@ app.add_middleware(
 
 app.include_router(api_router, prefix="/api/v1")
 
+
 @app.get("/api/docs", include_in_schema=False)
 async def swagger_ui():
     return get_swagger_ui_html(
@@ -145,10 +148,12 @@ async def swagger_ui():
         swagger_favicon_url="/favicon.ico",
     )
 
+
 @app.get("/api/health")
 async def health_check() -> dict:
     """Health check endpoint."""
     return {"status": "healthy", "service": "VerifID API"}
+
 
 @app.get("/{full_path:path}", include_in_schema=False)
 async def serve_spa(full_path: str) -> FileResponse:
