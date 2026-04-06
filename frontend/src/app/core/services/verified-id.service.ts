@@ -18,14 +18,14 @@ export interface IssuanceResponse {
   request_id: string;
   qr_code: string; // base64 PNG
   url: string; // deep-link for Authenticator
-  expiry: string;
+  expiry: number;
 }
 
 export interface PresentationResponse {
   request_id: string;
   qr_code: string;
   url: string;
-  expiry: string;
+  expiry: number;
   assistance_code: string;
 }
 
