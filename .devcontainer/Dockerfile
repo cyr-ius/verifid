@@ -23,7 +23,8 @@ ENV UV_SYSTEM_PYTHON=1 \
     PYTHONUNBUFFERED=1
 
 # ── Angular CLI 21 + outils globaux ────────────────────────────────────────
-ENV NG_CLI_ANALYTICS=ci
+ENV NG_CLI_ANALYTICS=ci \
+    NG_FORCE_TTY=false
 RUN npm install -g \
     @angular/cli@21 \
     typescript \
