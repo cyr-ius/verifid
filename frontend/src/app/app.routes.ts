@@ -1,52 +1,52 @@
 /**
  * Application routes configuration.
  */
-import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
+import { Routes } from "@angular/router";
+import { authGuard, helpdeskGuard, hrGuard } from "./core/guards/auth.guard";
 
 export const routes: Routes = [
   {
-    path: '',
-    redirectTo: 'verify',
-    pathMatch: 'full',
+    path: "",
+    redirectTo: "verify",
+    pathMatch: "full",
   },
   {
-    path: 'verify',
+    path: "verify",
     loadComponent: () =>
-      import('./features/verification/verification.component').then(
-        (m) => m.VerificationComponent
+      import("./features/verification/verification.component").then(
+        (m) => m.VerificationComponent,
       ),
-    title: 'Vérification identité – Helpdesk',
+    title: "Vérification identité – Helpdesk",
   },
   {
-    path: 'assist',
+    path: "assist",
+    canActivate: [helpdeskGuard],
+    loadComponent: () =>
+      import("./features/assistance-dashboard/assistance-dashboard.component").then(
+        (m) => m.AssistanceDashboardComponent,
+      ),
+    title: "Dashboard assistance – Helpdesk",
+  },
+  {
+    path: "me",
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/assistance-dashboard/assistance-dashboard.component').then(
-        (m) => m.AssistanceDashboardComponent
+      import("./features/auth-debug/auth-debug.component").then(
+        (m) => m.AuthDebugComponent,
       ),
-    title: 'Dashboard assistance – Helpdesk',
+    title: "Mon accès – Diagnostic token",
   },
   {
-    path: 'me',
-    canActivate: [authGuard],
+    path: "issue",
+    canActivate: [hrGuard],
     loadComponent: () =>
-      import('./features/auth-debug/auth-debug.component').then(
-        (m) => m.AuthDebugComponent
+      import("./features/issuance/issuance.component").then(
+        (m) => m.IssuanceComponent,
       ),
-    title: 'Mon accès – Diagnostic token',
+    title: "Émettre un credential – RH",
   },
   {
-    path: 'issue',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/issuance/issuance.component').then(
-        (m) => m.IssuanceComponent
-      ),
-    title: 'Émettre un credential – RH',
-  },
-  {
-    path: '**',
-    redirectTo: 'verify',
+    path: "**",
+    redirectTo: "verify",
   },
 ];

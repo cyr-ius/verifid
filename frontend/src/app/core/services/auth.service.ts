@@ -26,6 +26,40 @@ export class AuthService {
   readonly isAuthenticated = computed(() => this.account() !== null);
   readonly isEnabled = signal(false);
 
+  /** Roles extracted from the id token claims (field "roles"). */
+  readonly roles = computed<string[]>(() => {
+    const claims = this.account()?.idTokenClaims as
+      | Record<string, unknown>
+      | undefined;
+    console.debug("Extracting roles from claims", claims);
+    console.debug("Extracting roles from claims", this.account());
+    if (!claims) {
+      return [];
+    }
+    const raw = claims["roles"];
+    if (Array.isArray(raw)) {
+      return raw.filter((r): r is string => typeof r === "string");
+    }
+    console.debug(raw, "is not an array of strings");
+    return [];
+  });
+
+  /** True if the user has the helpdesk role. */
+  readonly isHelpdesk = computed(() => {
+    if (!this.isEnabled()) {
+      return true;
+    }
+    return this.roles().includes("helpdesk");
+  });
+
+  /** True if the user has the HR role. */
+  readonly isHR = computed(() => {
+    if (!this.isEnabled()) {
+      return true;
+    }
+    return this.roles().includes("hr");
+  });
+
   async initialize(settings: StatusResponse): Promise<void> {
     if (this.initialized) {
       return;
@@ -62,6 +96,7 @@ export class AuthService {
         event.eventType === EventType.ACQUIRE_TOKEN_SUCCESS
       ) {
         const payload = event.payload as AuthenticationResult | null;
+        console.debug("Authentication event", event.eventType, payload);
         if (payload?.account) {
           this.setActiveAccount(payload.account);
         }
@@ -85,20 +120,14 @@ export class AuthService {
     if (!this.msal || !this.authEnabled) {
       return;
     }
-
-    await this.msal.loginRedirect({
-      scopes: this.loginScopes,
-    });
+    await this.msal.loginRedirect({ scopes: this.loginScopes });
   }
 
   async logout(): Promise<void> {
     if (!this.msal || !this.authEnabled) {
       return;
     }
-
-    await this.msal.logoutRedirect({
-      account: this.account() ?? undefined,
-    });
+    await this.msal.logoutRedirect({ account: this.account() ?? undefined });
   }
 
   async acquireAccessToken(): Promise<string | null> {
@@ -132,28 +161,25 @@ export class AuthService {
     if (!this.authEnabled) {
       return false;
     }
-
     const normalizedUrl = this.normalizeApiUrl(url);
     if (!normalizedUrl.startsWith("/api/")) {
       return false;
     }
-
     if (PUBLIC_API_PATHS.includes(normalizedUrl)) {
       return false;
     }
-
-    return !PUBLIC_API_PREFIXES.some((prefix) => normalizedUrl.startsWith(prefix));
+    return !PUBLIC_API_PREFIXES.some((prefix) =>
+      normalizedUrl.startsWith(prefix),
+    );
   }
 
   async ensureAuthenticated(): Promise<boolean> {
     if (!this.authEnabled) {
       return true;
     }
-
     if (this.isAuthenticated()) {
       return true;
     }
-
     await this.login();
     return false;
   }
@@ -177,11 +203,9 @@ export class AuthService {
     if (url.startsWith("/")) {
       return url;
     }
-
     if (url.startsWith(window.location.origin)) {
       return url.slice(window.location.origin.length);
     }
-
     return url;
   }
 }

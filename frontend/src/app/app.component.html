@@ -1,7 +1,5 @@
-<!-- Top navigation bar -->
 <nav class="navbar app-navbar navbar-expand-lg navbar-dark shadow-sm">
   <div class="container">
-    <!-- Brand — short name on xs, full name from sm -->
     <a
       class="navbar-brand fw-bold d-flex align-items-center gap-2"
       routerLink="/"
@@ -15,7 +13,6 @@
       <span class="d-inline d-sm-none">VerifID</span>
     </a>
 
-    <!-- Mobile toggler -->
     <button
       class="navbar-toggler border-0"
       type="button"
@@ -28,12 +25,10 @@
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <!-- Nav links -->
     <div class="collapse navbar-collapse" id="mainNav">
-      <!-- Visual separator on mobile expanded menu -->
       <hr class="d-lg-none border-secondary my-2" />
-
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <!-- /verify always visible -->
         <li class="nav-item">
           <a
             class="nav-link"
@@ -44,12 +39,17 @@
             <i class="bi bi-shield-check me-2"></i>Vérification
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/assist" routerLinkActive="active">
-            <i class="bi bi-headset me-2"></i>Assistance
-          </a>
-        </li>
-        @if (issuer()) {
+        <!-- Assistance — helpdesk role, or auth disabled -->
+        @if (authService.isHelpdesk()) {
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/assist" routerLinkActive="active">
+              <i class="bi bi-headset me-2"></i>Assistance
+            </a>
+          </li>
+        }
+
+        <!-- Émission — hr role, or auth disabled -->
+        @if (authService.isHR()) {
           <li class="nav-item">
             <a class="nav-link" routerLink="/issue" routerLinkActive="active">
               <i class="bi bi-award me-2"></i>Émission (RH)
@@ -58,40 +58,35 @@
         }
       </ul>
 
+      <!-- Auth controls — only rendered when auth is enabled -->
       @if (authService.isEnabled()) {
         <hr class="d-lg-none border-secondary my-2" />
         <div class="d-flex align-items-center gap-2 pb-2 pb-lg-0 ms-lg-3">
           @if (authService.isAuthenticated()) {
-            <!-- Desktop: truncated username -->
             <span class="small text-white-50 auth-user d-none d-lg-inline">
               <i class="bi bi-person-circle me-1"></i>
-              {{
-                authService.account()?.name || authService.account()?.username
-              }}
+              <a
+                class="nav-link text-decoration-none text-white-50"
+                routerLink="/me"
+                routerLinkActive="active"
+              >
+                {{
+                  authService.account()?.name || authService.account()?.username
+                }}
+              </a>
             </span>
-            <!-- Mobile expanded menu: full name as nav link -->
-            <a
-              class="nav-link d-lg-none"
-              routerLink="/me"
-              routerLinkActive="active"
-            >
-              <i class="bi bi-person-circle me-2"></i>
-              {{
-                authService.account()?.name || authService.account()?.username
-              }}
-            </a>
             <button
               class="btn btn-outline-light btn-sm w-100 w-lg-auto"
               (click)="logout()"
             >
               Se déconnecter
             </button>
-          } @else if (showLoginAction()) {
+          } @else {
             <button
               class="btn btn-light btn-sm w-100 w-lg-auto"
               (click)="login()"
             >
-              Se connecter
+              <i class="bi bi-box-arrow-in-right me-1"></i>Se connecter
             </button>
           }
         </div>
@@ -100,12 +95,10 @@
   </div>
 </nav>
 
-<!-- Main content -->
 <main class="bg-light">
   <router-outlet />
 </main>
 
-<!-- Footer — title hidden on xs to save space -->
 <footer class="bg-white border-top py-3 text-center text-muted small">
   <i class="bi bi-shield-lock me-1"></i>
   Microsoft Entra Verified ID
