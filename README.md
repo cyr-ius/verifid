@@ -90,6 +90,7 @@ docker run -d \
   -e AZURE_CLIENT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
   -e AZURE_CLIENT_SECRET=your-client-secret \
   -e VERIFIED_ID_DID=did:web:yourdomain.com \
+  -e VERIFIED_ID_CONTRACT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
   -e APP_BASE_URL=https://yourdomain.com \
   -e API_KEY=your-api-key \
   -e AUTH_CLIENT_ID=xxxxxxx-xxx-xxxx-xxxx-xxxxxxxxxxxx \
@@ -113,6 +114,7 @@ services:
       - AZURE_CLIENT_ID=${AZURE_CLIENT_ID}
       - AZURE_CLIENT_SECRET=${AZURE_CLIENT_SECRET}
       - VERIFIED_ID_DID=${VERIFIED_ID_DID}
+      - VERIFIED_ID_CONTRACT_ID=${VERIFIED_ID_CONTRACT_ID}
       - APP_BASE_URL=${APP_BASE_URL}
       - API_KEY=${API_KEY}
       - AUTH_CLIENT_ID=${AUTH_CLIENT_ID}
@@ -158,6 +160,7 @@ docker compose up -d
 | `AZURE_CLIENT_ID`     | Client ID of the **Backend API** app registration  (Verif ID API interface)    |
 | `AZURE_CLIENT_SECRET` | Client secret for the backend app registration                                 |
 | `VERIFIED_ID_DID`     | Your Verified ID authority DID (e.g. `did:web:yourdomain.com`)                 |
+| `VERIFIED_ID_CONTRACT_ID` | Credential contract ID used to build the Verified ID issuance manifest URL |
 | `APP_BASE_URL`        | Public HTTPS base URL of the application — used by Microsoft to POST callbacks |
 | `API_KEY`             | Shared secret that Microsoft must include in callback headers                  |
 | `AUTH_CLIENT_ID`.     | Client ID of the **Frontend SPA** app registration (Verif ID interface)        |           

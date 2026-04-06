@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     AZURE_CLIENT_ID: str  # e.g. backend-app-client-id
     AZURE_CLIENT_SECRET: str  # e.g. backend-app-client-secret
     VERIFIED_ID_DID: str  # did:web:yourdomain.com
+    VERIFIED_ID_CONTRACT_ID: str  # Verifiable Credential contract ID used for issuance manifest
     APP_BASE_URL: str  # e.g. https://yourdomain.com
     API_KEY: str  # API key for callbacks
     AUTH_ENABLED: bool = True  # Whether to enable authentication (set to False for development without auth)
@@ -69,6 +70,13 @@ class Settings(BaseSettings):
         return [f"{audience}/{self.AUTH_SCOPE}" for audience in audiences] or [
             f"api://{self.AZURE_CLIENT_ID}/{self.AUTH_SCOPE}"
         ]
+
+    @property
+    def verified_id_manifest_url(self) -> str:
+        return (
+            f"{VERIFIED_ID}/v1.0/tenants/{self.AZURE_TENANT_ID}/"
+            f"verifiableCredentials/contracts/{self.VERIFIED_ID_CONTRACT_ID}/manifest"
+        )
 
 
 @lru_cache
