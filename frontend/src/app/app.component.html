@@ -64,12 +64,12 @@
         <div class="d-flex align-items-center gap-2 pb-2 pb-lg-0 ms-lg-3">
           @if (authService.isAuthenticated()) {
             <span class="small text-white-50 auth-user d-none d-lg-inline">
-              <i class="bi bi-person-circle me-1"></i>
               <a
                 class="nav-link text-decoration-none text-white-50"
                 routerLink="/me"
                 routerLinkActive="active"
               >
+                <i class="bi bi-person-circle me-1"></i>
                 {{
                   authService.account()?.name || authService.account()?.username
                 }}
