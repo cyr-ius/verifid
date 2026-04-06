@@ -14,5 +14,4 @@ class AuthStatus(BaseModel):
 
 class Status(BaseModel):
     logo: str
-    issuer: bool
     auth: AuthStatus

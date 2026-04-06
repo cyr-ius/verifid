@@ -16,8 +16,8 @@
   <!-- Employee form -->
   @if (state() === "form" || state() === "error") {
     <div class="card shadow-sm">
-      <div class="card-header">
-        <i class="bi bi-person-plus me-2"></i>Informations du salarié
+      <div class="card-header bg-primary text-white">
+        <i class="bi bi-person-plus me-2"></i>Inscription
       </div>
       <div class="card-body">
         <form (submit)="onSubmit($event)">

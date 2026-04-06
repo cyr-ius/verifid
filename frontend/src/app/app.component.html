@@ -47,7 +47,6 @@
             </a>
           </li>
         }
-
         <!-- Émission — hr role, or auth disabled -->
         @if (authService.isHR()) {
           <li class="nav-item">
@@ -60,36 +59,26 @@
 
       <!-- Auth controls — only rendered when auth is enabled -->
       @if (authService.isEnabled()) {
-        <hr class="d-lg-none border-secondary my-2" />
-        <div class="d-flex align-items-center gap-2 pb-2 pb-lg-0 ms-lg-3">
+        <ul class="navbar-nav ms-lg-3 mb-2 mb-lg-0">
+          <hr class="d-lg-none border-secondary my-2" />
           @if (authService.isAuthenticated()) {
-            <span class="small text-white-50 auth-user d-none d-lg-inline">
-              <a
-                class="nav-link text-decoration-none text-white-50"
-                routerLink="/me"
-                routerLinkActive="active"
-              >
+            <li class="nav-item">
+              <a class="nav-link" routerLink="/me" routerLinkActive="active">
                 <i class="bi bi-person-circle me-1"></i>
                 {{
                   authService.account()?.name || authService.account()?.username
                 }}
               </a>
-            </span>
-            <button
-              class="btn btn-outline-light btn-sm w-100 w-lg-auto"
-              (click)="logout()"
-            >
+            </li>
+            <button class="btn btn-outline-light btn-sm" (click)="logout()">
               Se déconnecter
             </button>
           } @else {
-            <button
-              class="btn btn-light btn-sm w-100 w-lg-auto"
-              (click)="login()"
-            >
+            <button class="btn btn-light btn-sm" (click)="login()">
               <i class="bi bi-box-arrow-in-right me-1"></i>Se connecter
             </button>
           }
-        </div>
+        </ul>
       }
     </div>
   </div>

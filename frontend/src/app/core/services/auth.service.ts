@@ -6,6 +6,7 @@ import {
   EventType,
   PublicClientApplication,
 } from "@azure/msal-browser";
+import { jwtDecode } from "jwt-decode";
 import { StatusResponse } from "./status.service";
 
 const PUBLIC_API_PATHS = [
@@ -27,22 +28,7 @@ export class AuthService {
   readonly isEnabled = signal(false);
 
   /** Roles extracted from the id token claims (field "roles"). */
-  readonly roles = computed<string[]>(() => {
-    const claims = this.account()?.idTokenClaims as
-      | Record<string, unknown>
-      | undefined;
-    console.debug("Extracting roles from claims", claims);
-    console.debug("Extracting roles from claims", this.account());
-    if (!claims) {
-      return [];
-    }
-    const raw = claims["roles"];
-    if (Array.isArray(raw)) {
-      return raw.filter((r): r is string => typeof r === "string");
-    }
-    console.debug(raw, "is not an array of strings");
-    return [];
-  });
+  readonly roles = signal<string[]>([]);
 
   /** True if the user has the helpdesk role. */
   readonly isHelpdesk = computed(() => {
@@ -96,9 +82,28 @@ export class AuthService {
         event.eventType === EventType.ACQUIRE_TOKEN_SUCCESS
       ) {
         const payload = event.payload as AuthenticationResult | null;
-        console.debug("Authentication event", event.eventType, payload);
         if (payload?.account) {
           this.setActiveAccount(payload.account);
+        }
+
+        if (payload?.accessToken) {
+          try {
+            const decoded = jwtDecode(payload.accessToken) as Record<
+              string,
+              unknown
+            >;
+            if (decoded && typeof decoded === "object") {
+              const rolesClaim = decoded["roles"];
+              if (Array.isArray(rolesClaim)) {
+                const roles = rolesClaim.filter(
+                  (r): r is string => typeof r === "string",
+                );
+                this.roles.set(roles);
+              }
+            }
+          } catch (e) {
+            console.warn("Failed to decode access token:", e);
+          }
         }
       }
     });

@@ -36,27 +36,17 @@
 
 /* clamp() ensures the code scales with screen width and is always readable */
 .assistance-code-digits {
-  font-size: clamp(2.8rem, 14vw, 3.5rem);
+  font-size: clamp(2.8rem, 10vw, 3.5rem);
   font-weight: 800;
   letter-spacing: 0.35em;
   color: #122147;
-  line-height: 1.1;
+  line-height: 1;
 }
 
 .assistance-code-hint {
   font-size: 0.8rem;
   color: #6c757d;
   margin-top: 0.35rem;
-}
-
-/* ── Tap-friendly buttons ───────────────────────────────────────────── */
-
-/* 48px min-height exceeds WCAG 2.5.5 (44px) tap target requirement */
-.btn-tap {
-  min-height: 48px;
-  font-size: 1rem;
-  font-weight: 500;
-  border-radius: 0.6rem;
 }
 
 /* ── Polling indicator ──────────────────────────────────────────────── */

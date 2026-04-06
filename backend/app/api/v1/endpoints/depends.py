@@ -13,13 +13,8 @@ bearer_scheme = HTTPBearer(auto_error=False)
 _openid_config_cache: tuple[float, dict[str, Any]] | None = None
 _jwks_cache: dict[str, tuple[float, dict[str, Any]]] = {}
 
-
-async def issuer_request() -> bool:
-    if app_settings.ISSUER_REQUEST:
-        return app_settings.ISSUER_REQUEST
-    raise HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED, detail="Issuer is disabled"
-    )
+_AUTH_ROLE_HELPDESK: str = "helpdesk"
+_AUTH_ROLE_HR: str = "hr"
 
 
 async def _fetch_json(url: str) -> dict[str, Any]:
@@ -58,7 +53,10 @@ async def _get_jwks(jwks_uri: str) -> dict[str, Any]:
         return cached[1]
 
     jwks = await _fetch_json(jwks_uri)
-    _jwks_cache[jwks_uri] = (now + app_settings.AUTH_JWKS_CACHE_TTL_SECONDS, jwks)
+    _jwks_cache[jwks_uri] = (
+        now + app_settings.AUTH_JWKS_CACHE_TTL_SECONDS,
+        jwks,
+    )
     return jwks
 
 
@@ -163,14 +161,12 @@ def require_roles(*required_roles: str) -> Callable[[dict[str, Any]], dict[str, 
 
 
 async def require_helpdesk_access(
-    principal: dict[str, Any] = Depends(
-        require_roles(app_settings.AUTH_ROLE_HELPDESK, app_settings.AUTH_SCOPE_HELPDESK)
-    ),
+    principal: dict[str, Any] = Depends(require_roles(_AUTH_ROLE_HELPDESK)),
 ) -> dict[str, Any]:
     return principal
 
 
 async def require_hr_access(
-    principal: dict[str, Any] = Depends(require_roles(app_settings.AUTH_ROLE_HR)),
+    principal: dict[str, Any] = Depends(require_roles(_AUTH_ROLE_HR)),
 ) -> dict[str, Any]:
     return principal

@@ -38,15 +38,15 @@ It enables HR teams to issue verifiable credentials to employees and helpdesk ag
 
 ## Architecture
 
-| Layer | Technology |
-|---|---|
-| **Frontend** | Angular 21 — Signals, Signal Forms, Zoneless, Standalone Components |
-| **Styling** | Bootstrap 5.3 + Bootstrap Icons 1.13 |
-| **Backend** | FastAPI 0.135 + Python 3.14 (fully async) |
-| **Validation** | Pydantic v2 |
-| **Identity** | Microsoft Entra Verified ID (Request Service API) |
-| **Auth** | MSAL (frontend) + python-jose JWT validation (backend) |
-| **Container** | Single-stage Docker image — `python:3.14-alpine` |
+| Layer          | Technology                                                          |
+| -------------- | ------------------------------------------------------------------- |
+| **Frontend**   | Angular 21 — Signals, Signal Forms, Zoneless, Standalone Components |
+| **Styling**    | Bootstrap 5.3 + Bootstrap Icons 1.13                                |
+| **Backend**    | FastAPI 0.135 + Python 3.14 (fully async)                           |
+| **Validation** | Pydantic v2                                                         |
+| **Identity**   | Microsoft Entra Verified ID (Request Service API)                   |
+| **Auth**       | MSAL (frontend) + python-jose JWT validation (backend)              |
+| **Container**  | Single-stage Docker image — `python:3.14-alpine`                    |
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -70,7 +70,7 @@ It enables HR teams to issue verifiable credentials to employees and helpdesk ag
 ## Prerequisites
 
 - Docker 24+ (or compatible runtime)
-- Docker Compose v2 *(optional)*
+- Docker Compose v2 _(optional)_
 - A Microsoft Azure tenant with:
   - Microsoft Entra Verified ID enabled and configured
   - Two App Registrations (see [Azure App Registrations](#azure-app-registrations))
@@ -89,9 +89,9 @@ docker run -d \
   -e AZURE_TENANT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
   -e AZURE_CLIENT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
   -e AZURE_CLIENT_SECRET=your-client-secret \
-  -e VC_AUTHORITY_DID=did:web:yourdomain.com \
+  -e VERIFIED_ID_DID=did:web:yourdomain.com \
   -e APP_BASE_URL=https://yourdomain.com \
-  -e VC_API_KEY=your-api-key \
+  -e API_KEY=your-api-key \
   -v verifid_data:/data \
   ghcr.io/cyr-ius/verifid:latest
 ```
@@ -112,9 +112,9 @@ services:
       - AZURE_TENANT_ID=${AZURE_TENANT_ID}
       - AZURE_CLIENT_ID=${AZURE_CLIENT_ID}
       - AZURE_CLIENT_SECRET=${AZURE_CLIENT_SECRET}
-      - VC_AUTHORITY_DID=${VC_AUTHORITY_DID}
+      - VERIFIED_ID_DID=${VERIFIED_ID_DID}
       - APP_BASE_URL=${APP_BASE_URL}
-      - VC_API_KEY=${VC_API_KEY}
+      - API_KEY=${API_KEY}
     volumes:
       - verifid_data:/data
 
@@ -156,43 +156,37 @@ docker compose up -d
 
 ### Required
 
-| Variable | Description |
-|---|---|
-| `AZURE_TENANT_ID` | Azure Active Directory tenant ID |
-| `AZURE_CLIENT_ID` | Client ID of the **Backend API** app registration |
-| `AZURE_CLIENT_SECRET` | Client secret for the backend app registration |
-| `VC_AUTHORITY_DID` | Your Verified ID authority DID (e.g. `did:web:yourdomain.com`) |
-| `APP_BASE_URL` | Public HTTPS base URL of the application — used by Microsoft to POST callbacks |
-| `VC_API_KEY` | Shared secret that Microsoft must include in callback headers |
+| Variable              | Description                                                                    |
+| --------------------- | ------------------------------------------------------------------------------ |
+| `AZURE_TENANT_ID`     | Azure Active Directory tenant ID                                               |
+| `AZURE_CLIENT_ID`     | Client ID of the **Backend API** app registration                              |
+| `AZURE_CLIENT_SECRET` | Client secret for the backend app registration                                 |
+| `VERIFIED_ID_DID`     | Your Verified ID authority DID (e.g. `did:web:yourdomain.com`)                 |
+| `APP_BASE_URL`        | Public HTTPS base URL of the application — used by Microsoft to POST callbacks |
+| `API_KEY`             | Shared secret that Microsoft must include in callback headers                  |
 
 ### Authentication
 
-| Variable | Description | Default |
-|---|---|---|
-| `AUTH_ENABLED` | Enable JWT authentication on protected endpoints | `True` |
-| `AUTH_AUDIENCE` | Comma-separated accepted JWT audiences | `AZURE_CLIENT_ID` |
-| `AUTH_ISSUERS` | Comma-separated accepted token issuers | Entra v2 + sts endpoints |
-| `AUTH_ROLE_HELPDESK` | Role name granting access to helpdesk endpoints | `helpdesk` |
-| `AUTH_ROLE_HR` | Role name granting access to issuance endpoints | `hr` |
-| `AUTH_SCOPE_HELPDESK` | Delegated scope accepted for helpdesk access | `access_as_user` |
+| Variable                        | Description                                      | Default           |
+| ------------------------------- | ------------------------------------------------ | ----------------- |
+| `AUTH_ENABLED`                  | Enable JWT authentication on protected endpoints | `True`            |
+| `AUTH_AUDIENCE`                 | Comma-separated accepted JWT audiences           | `AZURE_CLIENT_ID` |
+| `frontend_auth_scopes_HELPDESK` | Delegated scope accepted for helpdesk access     | `access_as_user`  |
 
 ### Frontend Entra ID Configuration
 
-| Variable | Description | Default |
-|---|---|---|
-| `FRONTEND_AUTH_CLIENT_ID` | Client ID of the **Frontend SPA** app registration | — |
-| `FRONTEND_AUTH_AUTHORITY` | MSAL authority URL | `https://login.microsoftonline.com/<tenant>` |
-| `FRONTEND_AUTH_SCOPES` | Comma-separated scopes the frontend requests | — |
+| Variable         | Description                                        | Default |
+| ---------------- | -------------------------------------------------- | ------- |
+| `AUTH_CLIENT_ID` | Client ID of the **Frontend SPA** app registration | —       |
 
 ### Feature Flags
 
-| Variable | Description | Default |
-|---|---|---|
-| `ISSUER_REQUEST` | Enable the issuance flow | `True` |
-| `SWAGGER_ENABLE` | Expose `/api/docs` and `/api/openapi.json` | `False` |
-| `CORS_ORIGINS` | JSON array of allowed CORS origins | `["http://localhost:4200"]` |
-| `LOG_LEVEL` | Log level (`DEBUG`, `INFO`, `WARNING`, `ERROR`) | `INFO` |
-| `LOGO_URL` | URL of the logo displayed in the navigation bar | placeholder |
+| Variable         | Description                                     | Default                     |
+| ---------------- | ----------------------------------------------- | --------------------------- |
+| `SWAGGER_ENABLE` | Expose `/api/docs` and `/api/openapi.json`      | `False`                     |
+| `CORS_ORIGINS`   | JSON array of allowed CORS origins              | `["http://localhost:4200"]` |
+| `LOG_LEVEL`      | Log level (`DEBUG`, `INFO`, `WARNING`, `ERROR`) | `INFO`                      |
+| `LOGO_URL`       | URL of the logo displayed in the navigation bar | placeholder                 |
 
 ---
 
@@ -205,6 +199,7 @@ Two App Registrations are required: one for the **Backend API** (used by the Fas
 ### App 1 — Backend API App Registration
 
 This registration allows the backend to:
+
 - Acquire tokens to call the Microsoft Entra Verified ID Request Service
 - Validate JWT access tokens sent by the Angular frontend
 - Expose application roles (`helpdesk`, `hr`) and a delegated scope (`access_as_user`)
@@ -213,8 +208,8 @@ This registration allows the backend to:
 
 1. Open the [Azure portal](https://portal.azure.com) and navigate to **Microsoft Entra ID → App registrations → New registration**
 2. Fill in the form:
-   - **Name**: `VerifID – Backend API` *(or any name you prefer)*
-   - **Supported account types**: *Accounts in this organizational directory only (Single tenant)*
+   - **Name**: `VerifID – Backend API` _(or any name you prefer)_
+   - **Supported account types**: _Accounts in this organizational directory only (Single tenant)_
    - **Redirect URI**: leave empty (the backend does not use redirect flows)
 3. Click **Register**
 4. Note the **Application (client) ID** — this is your `AZURE_CLIENT_ID`
@@ -231,16 +226,14 @@ This registration allows the backend to:
 #### Step 3 — Expose an API (Application ID URI and scope)
 
 1. Go to **Expose an API**
-2. Click **Set** next to *Application ID URI* — accept the default (`api://<client-id>`) or use a custom URI
+2. Click **Set** next to _Application ID URI_ — accept the default (`api://<client-id>`) or use a custom URI
 3. Click **Add a scope**:
    - **Scope name**: `access_as_user`
-   - **Who can consent**: *Admins and users*
+   - **Who can consent**: _Admins and users_
    - **Admin consent display name**: `Access VerifID as a user`
    - **Admin consent description**: `Allows the application to access the VerifID helpdesk API on behalf of the signed-in user`
    - **State**: Enabled
 4. Click **Add scope**
-
-The full scope URI will be `api://<client-id>/access_as_user` — use this for `FRONTEND_AUTH_SCOPES`.
 
 #### Step 4 — Declare application roles
 
@@ -250,23 +243,23 @@ Application roles are used for server-to-server authorization (`helpdesk`, `hr`)
 
 **Role 1 — Helpdesk**
 
-| Field | Value |
-|---|---|
-| Display name | `Helpdesk` |
-| Allowed member types | `Users/Groups` |
-| Value | `helpdesk` |
-| Description | `Access to helpdesk identity verification features` |
-| State | Enabled |
+| Field                | Value                                               |
+| -------------------- | --------------------------------------------------- |
+| Display name         | `Helpdesk`                                          |
+| Allowed member types | `Users/Groups`                                      |
+| Value                | `helpdesk`                                          |
+| Description          | `Access to helpdesk identity verification features` |
+| State                | Enabled                                             |
 
 **Role 2 — HR**
 
-| Field | Value |
-|---|---|
-| Display name | `HR` |
-| Allowed member types | `Users/Groups` |
-| Value | `hr` |
-| Description | `Access to HR credential issuance features` |
-| State | Enabled |
+| Field                | Value                                       |
+| -------------------- | ------------------------------------------- |
+| Display name         | `HR`                                        |
+| Allowed member types | `Users/Groups`                              |
+| Value                | `hr`                                        |
+| Description          | `Access to HR credential issuance features` |
+| State                | Enabled                                     |
 
 #### Step 5 — Grant the Verified ID permission
 
@@ -280,12 +273,12 @@ The backend needs to call the Verified ID Request Service using its own identity
 
 #### Step 6 — Collect the configuration values
 
-| `.env` variable | Where to find it |
-|---|---|
-| `AZURE_TENANT_ID` | Overview → Directory (tenant) ID |
-| `AZURE_CLIENT_ID` | Overview → Application (client) ID |
+| `.env` variable       | Where to find it                              |
+| --------------------- | --------------------------------------------- |
+| `AZURE_TENANT_ID`     | Overview → Directory (tenant) ID              |
+| `AZURE_CLIENT_ID`     | Overview → Application (client) ID            |
 | `AZURE_CLIENT_SECRET` | Certificates & secrets → the value you copied |
-| `AUTH_AUDIENCE` | `api://<client-id>` or the Application ID URI |
+| `AUTH_AUDIENCE`       | `api://<client-id>` or the Application ID URI |
 
 ---
 
@@ -298,10 +291,10 @@ This registration allows the Angular application to sign users in via MSAL and o
 1. Go to **Microsoft Entra ID → App registrations → New registration**
 2. Fill in the form:
    - **Name**: `VerifID – Frontend SPA`
-   - **Supported account types**: *Accounts in this organizational directory only (Single tenant)*
+   - **Supported account types**: _Accounts in this organizational directory only (Single tenant)_
    - **Redirect URI**: Select **Single-page application (SPA)** and enter `https://yourdomain.com` (add `http://localhost:4200` during development)
 3. Click **Register**
-4. Note the **Application (client) ID** — this is your `FRONTEND_AUTH_CLIENT_ID`
+4. Note the **Application (client) ID** — this is your `AUTH_CLIENT_ID`
 
 #### Step 2 — Configure authentication
 
@@ -320,14 +313,14 @@ The frontend needs permission to call the backend API using the scope created in
 2. Select **VerifID – Backend API**
 3. Select **Delegated permissions** → `access_as_user`
 4. Click **Add permissions**
-5. Click **Grant admin consent for \<your tenant\>** *(optional but recommended to avoid per-user consent prompts)*
+5. Click **Grant admin consent for \<your tenant\>** _(optional but recommended to avoid per-user consent prompts)_
 
 #### Step 4 — Assign users to roles
 
 Roles are assigned via **Enterprise Applications**, not App Registrations.
 
 1. Navigate to **Microsoft Entra ID → Enterprise Applications**
-2. Search for **VerifID – Backend API** *(the enterprise app is automatically created alongside the app registration)*
+2. Search for **VerifID – Backend API** _(the enterprise app is automatically created alongside the app registration)_
 3. Go to **Users and groups → Add user/group**
 4. Select the users or groups you want to assign and pick the role (`Helpdesk` or `HR`)
 5. Click **Assign**
@@ -336,31 +329,29 @@ Roles are assigned via **Enterprise Applications**, not App Registrations.
 
 #### Step 5 — Collect the configuration values
 
-| `.env` variable | Where to find it |
-|---|---|
-| `FRONTEND_AUTH_CLIENT_ID` | Overview → Application (client) ID of the **SPA** registration |
-| `FRONTEND_AUTH_AUTHORITY` | `https://login.microsoftonline.com/<tenant-id>` |
-| `FRONTEND_AUTH_SCOPES` | `api://<backend-client-id>/access_as_user` |
+| `.env` variable  | Where to find it                                               |
+| ---------------- | -------------------------------------------------------------- |
+| `AUTH_CLIENT_ID` | Overview → Application (client) ID of the **SPA** registration |
 
 ---
 
 ### Summary Table
 
-| Purpose | App Registration | Key values |
-|---|---|---|
-| Backend token acquisition & JWT validation | `VerifID – Backend API` | `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AUTH_AUDIENCE` |
-| Frontend user sign-in (MSAL) | `VerifID – Frontend SPA` | `FRONTEND_AUTH_CLIENT_ID`, `FRONTEND_AUTH_SCOPES` |
+| Purpose                                    | App Registration         | Key values                                                |
+| ------------------------------------------ | ------------------------ | --------------------------------------------------------- |
+| Backend token acquisition & JWT validation | `VerifID – Backend API`  | `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AUTH_AUDIENCE` |
+| Frontend user sign-in (MSAL)               | `VerifID – Frontend SPA` | `AUTH_CLIENT_ID`                                          |
 
 ---
 
 ## Roles & Permissions
 
-| Role / Scope | Grants access to |
-|---|---|
-| `helpdesk` (app role) | `/api/v1/verified-id/assist/{code}` |
-| `access_as_user` (delegated scope) | `/api/v1/verified-id/assist/{code}` *(alternative to the role)* |
-| `hr` (app role) | `/api/v1/verified-id/issue` |
-| *(no auth)* | `/verify` page and `/api/v1/verified-id/verify` |
+| Role / Scope                       | Grants access to                                                |
+| ---------------------------------- | --------------------------------------------------------------- |
+| `helpdesk` (app role)              | `/api/v1/verified-id/assist/{code}`                             |
+| `access_as_user` (delegated scope) | `/api/v1/verified-id/assist/{code}` _(alternative to the role)_ |
+| `hr` (app role)                    | `/api/v1/verified-id/issue`                                     |
+| _(no auth)_                        | `/verify` page and `/api/v1/verified-id/verify`                 |
 
 Authentication can be disabled entirely by setting `AUTH_ENABLED=False` — useful during initial setup and testing.
 

@@ -6,49 +6,30 @@ from functools import lru_cache
 
 from pydantic_settings import BaseSettings
 
+JSDELIVR = "https://cdn.jsdelivr.net"
+MS_LOGIN = "https://login.microsoftonline.com"
+MS_STS = "https://sts.windows.net"
+VERIFIED_ID = "https://verifiedid.did.msidentity.com"
+
 
 class Settings(BaseSettings):
     """Application settings from environment variables."""
 
-    # Azure Entra / MSAL settings
-    AZURE_TENANT_ID: str
-    AZURE_CLIENT_ID: str
-    AZURE_CLIENT_SECRET: str
-
-    # Microsoft Entra Verified ID settings
-    VC_AUTHORITY_DID: str  # did:web:yourdomain.com
-
-    # Callback configuration - must be a publicly accessible HTTPS URL
+    AZURE_TENANT_ID: str  # e.g. your-tenant-id-guid
+    AZURE_CLIENT_ID: str  # e.g. backend-app-client-id
+    AZURE_CLIENT_SECRET: str  # e.g. backend-app-client-secret
+    VERIFIED_ID_DID: str  # did:web:yourdomain.com
     APP_BASE_URL: str  # e.g. https://yourdomain.com
-    VC_API_KEY: str  # API key for callbacks
-
-    # CORS
+    API_KEY: str  # API key for callbacks
     CORS_ORIGINS: list[str] = ["http://localhost:4200"]
-
-    # Session / security
-    AUTH_ENABLED: bool = True
-    AUTH_AUDIENCE: str = ""
-    AUTH_ISSUERS: str = ""
-    AUTH_OPENID_CONFIG_URL: str = ""
+    AUTH_ENABLED: bool = True  # Whether to enable authentication (set to False for development without auth)
+    AUTH_CLIENT_ID: str  # e.g. frontend-app-client-id
+    AUTH_AUDIENCE: str  # e.g. api://your-api-audience, can be comma-separated for multiple audiences
     AUTH_JWKS_CACHE_TTL_SECONDS: int = 3600
-    AUTH_ROLE_HELPDESK: str = "helpdesk"
-    AUTH_ROLE_HR: str = "hr"
-    AUTH_SCOPE_HELPDESK: str = "access_as_user"
-    FRONTEND_AUTH_CLIENT_ID: str = ""
-    FRONTEND_AUTH_AUTHORITY: str = ""
-    FRONTEND_AUTH_SCOPES: str = ""
-
-    # Logo URL
-    LOGO_URL: str = "https://placehold.co/140x36/FFFFFF/122147?text=Logo"
-
-    # Verification ID Issuer request
-    ISSUER_REQUEST: bool = True
-
-    # Log level
-    LOG_LEVEL: str = "INFO"
-
-    # Swagger
-    SWAGGER_ENABLE: bool = False
+    AUTH_SCOPE: str = "access_as_user"  # Scope for frontend authentication
+    LOGO_URL: str = "/static/logo.png"  # URL to the logo image
+    LOG_LEVEL: str = "INFO"  # Logging level (e.g. DEBUG, INFO, WARNING, ERROR)
+    SWAGGER_ENABLE: bool = False  # Whether to enable Swagger UI for API documentation
 
     class Config:
         env_file = ".env"
@@ -58,11 +39,8 @@ class Settings(BaseSettings):
 
     @property
     def entra_openid_config_url(self) -> str:
-        if self.AUTH_OPENID_CONFIG_URL:
-            return self.AUTH_OPENID_CONFIG_URL
         return (
-            f"https://login.microsoftonline.com/{self.AZURE_TENANT_ID}"
-            "/v2.0/.well-known/openid-configuration"
+            f"{MS_LOGIN}/{self.AZURE_TENANT_ID}/v2.0/.well-known/openid-configuration"
         )
 
     @property
@@ -75,25 +53,23 @@ class Settings(BaseSettings):
 
     @property
     def auth_issuers(self) -> list[str]:
-        configured = [value.strip() for value in self.AUTH_ISSUERS.split(",")]
-        issuers = [value for value in configured if value]
-        if issuers:
-            return issuers
         return [
-            f"https://login.microsoftonline.com/{self.AZURE_TENANT_ID}/v2.0",
-            f"https://sts.windows.net/{self.AZURE_TENANT_ID}/",
+            f"{MS_LOGIN}/{self.AZURE_TENANT_ID}/v2.0",
+            f"{MS_STS}/{self.AZURE_TENANT_ID}/",
         ]
 
     @property
     def frontend_auth_authority(self) -> str:
-        if self.FRONTEND_AUTH_AUTHORITY:
-            return self.FRONTEND_AUTH_AUTHORITY
-        return f"https://login.microsoftonline.com/{self.AZURE_TENANT_ID}"
+        return f"{MS_LOGIN}/{self.AZURE_TENANT_ID}"
 
     @property
     def frontend_auth_scopes(self) -> list[str]:
-        scopes = [scope.strip() for scope in self.FRONTEND_AUTH_SCOPES.split(",")]
-        return [scope for scope in scopes if scope]
+        audiences = [
+            value.strip() for value in self.AUTH_AUDIENCE.split(",") if value.strip()
+        ]
+        return [f"{audience}/{self.AUTH_SCOPE}" for audience in audiences] or [
+            f"{self.AZURE_CLIENT_ID}/{self.AUTH_SCOPE}"
+        ]
 
 
 @lru_cache

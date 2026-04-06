@@ -24,7 +24,6 @@ import { StatusService } from "./core/services/status.service";
 export class AppComponent implements OnInit {
   readonly title = "Verified ID – Portail Entreprise";
   readonly logoUrl = signal("");
-  readonly issuer = signal<boolean>(false);
   readonly currentPath = signal("");
   readonly authService = inject(AuthService);
   private readonly router = inject(Router);
@@ -41,13 +40,11 @@ export class AppComponent implements OnInit {
     const cachedSettings = this.statusService.cachedSettings;
     if (cachedSettings) {
       this.logoUrl.set(cachedSettings.logo);
-      this.issuer.set(cachedSettings.issuer);
       return;
     }
 
     this.statusService.getSettings().subscribe((status) => {
       this.logoUrl.set(status.logo);
-      this.issuer.set(status.issuer);
     });
   }
 

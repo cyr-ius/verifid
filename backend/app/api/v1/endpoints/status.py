@@ -15,10 +15,9 @@ router = APIRouter()
 async def status():
     return Status(
         logo=app_settings.LOGO_URL,
-        issuer=app_settings.ISSUER_REQUEST,
         auth=AuthStatus(
             enabled=app_settings.AUTH_ENABLED,
-            client_id=app_settings.FRONTEND_AUTH_CLIENT_ID,
+            client_id=app_settings.AUTH_CLIENT_ID,
             authority=app_settings.frontend_auth_authority,
             scopes=app_settings.frontend_auth_scopes,
         ),

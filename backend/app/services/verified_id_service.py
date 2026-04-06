@@ -73,15 +73,15 @@ async def create_issuance_request(
 
     payload: dict[str, Any] = {
         "includeQRCode": True,
-        "authority": app_settings.VC_AUTHORITY_DID,
+        "authority": app_settings.VERIFIED_ID_DID,
         "registration": {
             "clientName": "Employee Identity Portal",
         },
         "callback": {
             "url": callback_url,
             "state": session_id,
-            "headers": {"api-key": app_settings.VC_API_KEY}
-            if app_settings.VC_API_KEY
+            "headers": {"api-key": app_settings.API_KEY}
+            if app_settings.API_KEY
             else {},
         },
         "type": "VerifiedEmployee",
@@ -135,7 +135,7 @@ async def create_presentation_request(session_id: str) -> PresentationResponse:
 
     payload: dict[str, Any] = {
         "includeQRCode": True,
-        "authority": app_settings.VC_AUTHORITY_DID,
+        "authority": app_settings.VERIFIED_ID_DID,
         "registration": {
             "clientName": "Helpdesk Identity Verification",
             "purpose": "Verify employee identity for helpdesk request",
@@ -143,14 +143,14 @@ async def create_presentation_request(session_id: str) -> PresentationResponse:
         "callback": {
             "url": callback_url,
             "state": session_id,
-            "headers": {"api-key": app_settings.VC_API_KEY}
-            if app_settings.VC_API_KEY
+            "headers": {"api-key": app_settings.API_KEY}
+            if app_settings.API_KEY
             else {},
         },
         "requestedCredentials": [
             {
                 "type": "VerifiedEmployee",
-                "acceptedIssuers": [app_settings.VC_AUTHORITY_DID],
+                "acceptedIssuers": [app_settings.VERIFIED_ID_DID],
                 "configuration": {
                     "validation": {
                         "allowRevoked": False,

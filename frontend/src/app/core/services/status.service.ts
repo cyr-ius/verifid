@@ -11,7 +11,6 @@ export interface AuthStatusResponse {
 
 export interface StatusResponse {
   logo: string;
-  issuer: boolean;
   auth: AuthStatusResponse;
 }
 

@@ -1,7 +1,7 @@
 :root {
-  --bs-primary: #122147;
+  /* --bs-primary: #122147; */
   --bs-primary-rgb: 18, 33, 71;
-  --bs-blue: #122147;
+  /* --bs-blue: #122147; */
 }
 
 /* ── Mobile-first base ──────────────────────────────────────────────── */
@@ -23,19 +23,19 @@
 } */
 
 /* Form controls */
-.form-control,
+/* .form-control,
 .form-select {
   min-height: 48px;
   font-size: 1rem;
-}
+} */
 
 /* Nav links easier to tap */
-.nav-link {
+/* .nav-link {
   min-height: 44px;
   display: flex;
   align-items: center;
   padding: 0.6rem 0.75rem;
-}
+} */
 
 /* Tables don't overflow on small screens */
 .table-responsive {

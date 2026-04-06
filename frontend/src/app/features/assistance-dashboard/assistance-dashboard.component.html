@@ -22,7 +22,7 @@
           <input
             id="assistanceCode"
             type="text"
-            class="form-control form-control-lg code-input"
+            class="form-control"
             inputmode="numeric"
             maxlength="4"
             placeholder="Ex. 4821"
@@ -30,20 +30,17 @@
             (ngModelChange)="onCodeInput($event)"
             (keyup.enter)="lookupByCode()"
           />
-          <div class="form-text">
+          <div class="valid-feedback mt-1">
             Code court remis à l'utilisateur au démarrage de la vérification.
           </div>
         </div>
         <div class="col-md-auto">
-          <button class="btn btn-primary btn-lg w-100" (click)="lookupByCode()">
+          <button class="btn btn-primary w-100" (click)="lookupByCode()">
             <i class="bi bi-search me-2"></i>Vérifier
           </button>
         </div>
         <div class="col-md-auto">
-          <button
-            class="btn btn-outline-secondary btn-lg w-100"
-            (click)="reset()"
-          >
+          <button class="btn btn-outline-secondary w-100" (click)="reset()">
             <i class="bi bi-arrow-counterclockwise me-2"></i>Réinitialiser
           </button>
         </div>

@@ -14,7 +14,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 
 from .api.v1.router import api_router
-from .core.config import app_settings
+from .core.config import JSDELIVR, MS_LOGIN, VERIFIED_ID, app_settings
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(
@@ -34,13 +34,11 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     # Build CSP once at class level — one directive per list entry, auditable.
     _CSP_DIRECTIVES: list[str] = [
         "default-src 'self'",
-        "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",  # Angular requires unsafe-inline
-        "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",  # Bootstrap inline styles
+        f"script-src 'self' 'unsafe-inline' {JSDELIVR}",  # Angular requires unsafe-inline
+        f"style-src 'self' 'unsafe-inline' {JSDELIVR}",  # Bootstrap inline styles
         "img-src 'self' data: https:",  # logos, QR codes base64
         "font-src 'self' data:",  # Bootstrap Icons embedded font
-        "connect-src 'self'"  # API calls + Azure endpoints
-        " https://login.microsoftonline.com"  # MSAL auth
-        " https://verifiedid.did.msidentity.com",  # Verified ID service
+        f"connect-src 'self' {MS_LOGIN} {VERIFIED_ID}",  # API calls + Azure endpoints
         "worker-src 'self'",  # Angular Service Worker (PWA)
         "frame-ancestors 'none'",  # replaces X-Frame-Options
     ]

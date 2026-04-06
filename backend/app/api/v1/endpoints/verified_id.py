@@ -27,7 +27,7 @@ from ....services.verified_id_service import (
     create_issuance_request,
     create_presentation_request,
 )
-from .depends import issuer_request, require_helpdesk_access, require_hr_access
+from .depends import require_helpdesk_access, require_hr_access
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -55,9 +55,7 @@ def _extract_presented_claims(payload: PresentationCallbackPayload) -> dict:
     summary="Request VC issuance for an employee",
 )
 async def issue_credential(
-    body: EmployeeIssuanceRequest,
-    _: bool = Depends(issuer_request),
-    __: dict = Depends(require_hr_access),
+    body: EmployeeIssuanceRequest, __: dict = Depends(require_hr_access)
 ) -> IssuanceResponse:
     """
     Initiate a Verifiable Credential issuance for the given employee.
@@ -96,9 +94,7 @@ async def issue_credential(
     summary="Callback from Microsoft Verified ID after issuance",
 )
 async def issuance_callback(
-    payload: IssuanceCallbackPayload,
-    api_key: str = Header(alias="api-key"),
-    _: bool = Depends(issuer_request),
+    payload: IssuanceCallbackPayload, api_key: str = Header(alias="api-key")
 ) -> None:
     """
     Receives status updates from the Microsoft Verified ID service after
@@ -108,7 +104,7 @@ async def issuance_callback(
         payload: Callback payload from Microsoft.
         api_key: Optional API key header for security.
     """
-    if app_settings.VC_API_KEY and api_key != app_settings.VC_API_KEY:
+    if app_settings.API_KEY and api_key != app_settings.API_KEY:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
     session = sessions.get(payload.state, {})
@@ -180,7 +176,7 @@ async def presentation_callback(
         payload: Callback payload from Microsoft.
         api_key: Optional API key header for security.
     """
-    if app_settings.VC_API_KEY and api_key != app_settings.VC_API_KEY:
+    if app_settings.API_KEY and api_key != app_settings.API_KEY:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
     session = sessions.get(payload.state, {})

@@ -10,20 +10,12 @@ services:
       - AZURE_TENANT_ID=${AZURE_TENANT_ID:-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
       - AZURE_CLIENT_ID=${AZURE_CLIENT_ID:-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
       - AZURE_CLIENT_SECRET=${AZURE_CLIENT_SECRET:-change-me}
-      - VC_AUTHORITY_DID=${VC_AUTHORITY_DID:-did:web:verifiedid.entra.microsoft.com:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
-      - VC_API_KEY=${VC_API_KEY:-change-me}
-      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - VERIFIED_ID_DID=${VERIFIED_ID_DID:-did:web:verifiedid.entra.microsoft.com:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}
       - APP_BASE_URL=${APP_BASE_URL:-http://localhost:8000}
-      - SWAGGER_ENABLE=${SWAGGER_ENABLE:-False}
+      - API_KEY=${API_KEY:-change-me}
       - AUTH_AUDIENCE=${AUTH_AUDIENCE:-api://default}
-      - FRONTEND_AUTH_SCOPES=${FRONTEND_AUTH_SCOPES:-api://default/access_as_user}
-      - FRONTEND_AUTH_CLIENT_ID=${FRONTEND_AUTH_CLIENT_ID}
-    volumes:
-      - verifid_data:/data
-    cap_add:
-      - NET_ADMIN
+      - AUTH_CLIENT_ID=${AUTH_CLIENT_ID}
     ports:
-      - 51820:51820/udp
       - 8000:8000/tcp
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
@@ -32,5 +24,3 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-volumes:
-  verifid_data:
