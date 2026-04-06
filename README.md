@@ -171,7 +171,8 @@ docker compose up -d
 | ------------------------------- | ------------------------------------------------ | ----------------- |
 | `AUTH_ENABLED`                  | Enable JWT authentication on protected endpoints | `True`            |
 | `AUTH_AUDIENCE`                 | Comma-separated accepted JWT audiences           | `AZURE_CLIENT_ID` |
-| `frontend_auth_scopes_HELPDESK` | Delegated scope accepted for helpdesk access     | `access_as_user`  |
+| `AUTH_SCOPE                   ` | Delegated scope accepted for helpdesk access     | `access_as_user`  |
+| `AUTH_JWKS_CACHE_TTL_SECONDS`   | Time to cache JWKS keys (reduce latency)         | `3600`            |
 
 ### Frontend Entra ID Configuration
 
@@ -181,12 +182,11 @@ docker compose up -d
 
 ### Feature Flags
 
-| Variable         | Description                                     | Default                     |
-| ---------------- | ----------------------------------------------- | --------------------------- |
-| `SWAGGER_ENABLE` | Expose `/api/docs` and `/api/openapi.json`      | `False`                     |
-| `CORS_ORIGINS`   | JSON array of allowed CORS origins              | `["http://localhost:4200"]` |
-| `LOG_LEVEL`      | Log level (`DEBUG`, `INFO`, `WARNING`, `ERROR`) | `INFO`                      |
-| `LOGO_URL`       | URL of the logo displayed in the navigation bar | placeholder                 |
+| Variable         | Description                                     | Default     |
+| ---------------- | ----------------------------------------------- | ----------- |
+| `SWAGGER_ENABLE` | Expose `/api/docs` and `/api/openapi.json`      | `False`     |
+| `LOG_LEVEL`      | Log level (`DEBUG`, `INFO`, `WARNING`, `ERROR`) | `INFO`      |
+| `LOGO_URL`       | URL of the logo displayed in the navigation bar | placeholder |
 
 ---
 
@@ -337,10 +337,10 @@ Roles are assigned via **Enterprise Applications**, not App Registrations.
 
 ### Summary Table
 
-| Purpose                                    | App Registration         | Key values                                                |
-| ------------------------------------------ | ------------------------ | --------------------------------------------------------- |
-| Backend token acquisition & JWT validation | `VerifID – Backend API`  | `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AUTH_AUDIENCE` |
-| Frontend user sign-in (MSAL)               | `VerifID – Frontend SPA` | `AUTH_CLIENT_ID`                                          |
+| Purpose                                    | App Registration         | Key values                                                     |
+| ------------------------------------------ | ------------------------ | -------------------------------------------------------------- |
+| Backend token acquisition & JWT validation | `VerifID – Backend API`  | `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AUTH_AUDIENCE`      |
+| Frontend user sign-in (MSAL)               | `VerifID – Frontend SPA` | `AUTH_CLIENT_ID` , `AUTH_SCOPE`, `AUTH_JWKS_CACHE_TTL_SECONDS` |
 
 ---
 
