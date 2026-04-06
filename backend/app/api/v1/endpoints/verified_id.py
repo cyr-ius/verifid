@@ -102,7 +102,7 @@ async def issuance_callback(
 
     Args:
         payload: Callback payload from Microsoft.
-        api_key: Optional API key header for security.
+        api_key: API key header for security.
     """
     if app_settings.API_KEY and api_key != app_settings.API_KEY:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
