@@ -119,6 +119,8 @@ app.include_router(api_router, prefix="/api/v1")
 
 @app.get("/api/docs", include_in_schema=False)
 async def swagger_ui():
+    if not app_settings.SWAGGER_ENABLE:
+        raise HTTPException(status_code=404, detail="Not Found")
     return get_swagger_ui_html(
         openapi_url="/api/openapi.json",
         title="Employee Verified ID API",

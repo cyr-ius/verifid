@@ -15,6 +15,7 @@ services:
       - API_KEY=${API_KEY:-change-me}
       - AUTH_AUDIENCE=${AUTH_AUDIENCE:-api://default}
       - AUTH_CLIENT_ID=${AUTH_CLIENT_ID}
+      - SWAGGER_ENABLE=${SWAGGER_ENABLE:-False}
     ports:
       - 8000:8000/tcp
     sysctls:
