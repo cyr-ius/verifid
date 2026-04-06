@@ -79,9 +79,7 @@ async def create_issuance_request(
         "callback": {
             "url": callback_url,
             "state": session_id,
-            "headers": {"api-key": app_settings.API_KEY}
-            if app_settings.API_KEY
-            else {},
+            "headers": {"api-key": app_settings.API_KEY},
         },
         "type": "VerifiedEmployee",
         "manifest": app_settings.verified_id_manifest_url,
@@ -142,9 +140,7 @@ async def create_presentation_request(session_id: str) -> PresentationResponse:
         "callback": {
             "url": callback_url,
             "state": session_id,
-            "headers": {"api-key": app_settings.API_KEY}
-            if app_settings.API_KEY
-            else {},
+            "headers": {"api-key": app_settings.API_KEY},
         },
         "requestedCredentials": [
             {

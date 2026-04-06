@@ -104,7 +104,7 @@ async def issuance_callback(
         payload: Callback payload from Microsoft.
         api_key: API key header for security.
     """
-    if app_settings.API_KEY and api_key != app_settings.API_KEY:
+    if api_key != app_settings.API_KEY:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
     session = sessions.get(payload.state, {})
@@ -174,9 +174,9 @@ async def presentation_callback(
 
     Args:
         payload: Callback payload from Microsoft.
-        api_key: Optional API key header for security.
+        api_key: API key header for security.
     """
-    if app_settings.API_KEY and api_key != app_settings.API_KEY:
+    if api_key != app_settings.API_KEY:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
     session = sessions.get(payload.state, {})
