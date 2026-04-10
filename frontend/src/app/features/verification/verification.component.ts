@@ -11,6 +11,7 @@ import { Component, OnDestroy, inject, signal } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { Subscription } from "rxjs";
+import { I18nService } from "../../core/services/i18n.service";
 import {
   VerifiedIdService,
   VerificationStatus,
@@ -27,6 +28,7 @@ type VerifyState = "idle" | "loading" | "qr" | "success" | "error";
 })
 export class VerificationComponent implements OnDestroy {
   private readonly verifiedIdService = inject(VerifiedIdService);
+  readonly i18n = inject(I18nService);
 
   /** Current UI state */
   state = signal<VerifyState>("idle");
@@ -59,7 +61,7 @@ export class VerificationComponent implements OnDestroy {
     const code = this.enteredCode().trim();
     if (!/^\d{4}$/.test(code)) {
       this.state.set("error");
-      this.errorMessage.set("Veuillez saisir un code à 4 chiffres.");
+      this.errorMessage.set(this.i18n.t("verification.error.code"));
       return;
     }
 
@@ -78,7 +80,7 @@ export class VerificationComponent implements OnDestroy {
         this.state.set("error");
         this.errorMessage.set(
           err.error?.detail ||
-            "Code introuvable ou déjà utilisé. Demandez un nouveau code au helpdesk.",
+            this.i18n.t("verification.error.notFound"),
         );
       },
     });
@@ -95,16 +97,14 @@ export class VerificationComponent implements OnDestroy {
             this.state.set("success");
           } else if (status.status === "error") {
             this.errorMessage.set(
-              status.error_message ?? "Vérification échouée.",
+              status.error_message ?? this.i18n.t("verification.error.failed"),
             );
             this.state.set("error");
           }
         },
         error: () => {
           this.state.set("error");
-          this.errorMessage.set(
-            "Erreur de communication. Veuillez réessayer.",
-          );
+          this.errorMessage.set(this.i18n.t("verification.error.communication"));
         },
       });
   }

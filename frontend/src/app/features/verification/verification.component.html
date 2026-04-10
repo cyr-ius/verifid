@@ -3,12 +3,11 @@
   <!-- ── Page header ──────────────────────────────────────────────────── -->
   <div class="mb-3 mb-md-4">
     <h2 class="fw-bold mb-1">
-      <i class="bi bi-shield-check me-2 text-primary"></i>Vérification
-      d'identité
+      <i class="bi bi-shield-check me-2 text-primary"></i
+      >{{ i18n.t("verification.title") }}
     </h2>
     <p class="text-muted mb-0 small d-none d-sm-block">
-      Saisissez le code communiqué par le helpdesk, puis scannez le QR code avec
-      Microsoft Authenticator.
+      {{ i18n.t("verification.subtitle") }}
     </p>
   </div>
 
@@ -16,7 +15,8 @@
   @if (state() === "idle" || state() === "error") {
     <div class="card shadow-sm">
       <div class="card-header bg-primary text-white py-2">
-        <i class="bi bi-keyboard me-2"></i>Saisie du code
+        <i class="bi bi-keyboard me-2"></i
+        >{{ i18n.t("verification.codeEntry") }}
       </div>
       <div class="card-body text-center py-5 px-4">
         <i
@@ -24,8 +24,7 @@
           style="font-size: 3rem"
         ></i>
         <p class="text-muted mb-4">
-          Saisissez le code à 4 chiffres que le helpdesk vous a communiqué
-          oralement.
+          {{ i18n.t("verification.codeHelp") }}
         </p>
 
         <div class="d-flex justify-content-center mb-3">
@@ -38,7 +37,7 @@
             [ngModel]="enteredCode()"
             (ngModelChange)="onCodeInput($event)"
             (keyup.enter)="submitCode()"
-            aria-label="Code d'assistance à 4 chiffres"
+            [attr.aria-label]="i18n.t('verification.codeAria')"
           />
         </div>
 
@@ -53,7 +52,8 @@
           (click)="submitCode()"
           [disabled]="enteredCode().length !== 4"
         >
-          <i class="bi bi-arrow-right-circle me-2"></i>Continuer
+          <i class="bi bi-arrow-right-circle me-2"></i
+          >{{ i18n.t("verification.continue") }}
         </button>
       </div>
     </div>
@@ -64,9 +64,11 @@
     <div class="card shadow-sm">
       <div class="card-body text-center py-5">
         <div class="spinner-border text-primary mb-3" role="status">
-          <span class="visually-hidden">Chargement...</span>
+          <span class="visually-hidden">{{
+            i18n.t("verification.loadingHint")
+          }}</span>
         </div>
-        <p class="text-muted mb-0">Génération du QR code…</p>
+        <p class="text-muted mb-0">{{ i18n.t("verification.loading") }}</p>
       </div>
     </div>
   }
@@ -78,19 +80,25 @@
       <div class="col-12 col-md-6">
         <div class="card shadow-sm h-100">
           <div class="card-header bg-primary text-white py-2">
-            <i class="bi bi-qr-code me-2"></i>QR Code de vérification
+            <i class="bi bi-qr-code me-2"></i
+            >{{ i18n.t("verification.qrTitle") }}
           </div>
           <div
             class="card-body d-flex flex-column align-items-center gap-3 py-3"
           >
-            <img [src]="qrCode()" alt="QR Code Verified ID" class="qr-image" />
+            <img
+              [src]="qrCode()"
+              [alt]="i18n.t('verification.qrAlt')"
+              class="qr-image"
+            />
 
             @if (deepLink()) {
               <a
                 [href]="deepLink()"
                 class="btn btn-outline-primary btn-tap w-100"
               >
-                <i class="bi bi-phone me-2"></i>Ouvrir sur ce téléphone
+                <i class="bi bi-phone me-2"></i
+                >{{ i18n.t("verification.openPhone") }}
               </a>
             }
 
@@ -103,14 +111,15 @@
                 class="spinner-border spinner-border-sm flex-shrink-0"
                 aria-hidden="true"
               ></div>
-              <span>En attente de la confirmation…</span>
+              <span>{{ i18n.t("verification.waiting") }}</span>
             </div>
 
             <button
               class="btn btn-outline-secondary w-100 mt-auto"
               (click)="reset()"
             >
-              <i class="bi bi-arrow-counterclockwise me-1"></i>Annuler
+              <i class="bi bi-arrow-counterclockwise me-1"></i
+              >{{ i18n.t("verification.cancel") }}
             </button>
           </div>
         </div>
@@ -120,40 +129,32 @@
       <div class="col-12 col-md-6">
         <div class="card shadow-sm h-100">
           <div class="card-header py-2">
-            <i class="bi bi-list-ol me-2"></i>Instructions
+            <i class="bi bi-list-ol me-2"></i
+            >{{ i18n.t("verification.instructions") }}
           </div>
           <div class="card-body d-flex flex-column gap-3 py-3">
             <ol
               class="list-group list-group-flush list-group-numbered step-list mb-0"
             >
               <li class="list-group-item border-0 px-0">
-                Ouvrir <strong>Microsoft Authenticator</strong> sur votre
-                smartphone.
+                {{ i18n.t("verification.step1") }}
               </li>
               <li class="list-group-item border-0 px-0">
                 <ul>
                   <li>
-                    <u>Vous êtes sur le même téléphone</u> que celui où
-                    Microsoft Authenticator est installé ? Appuyez sur le bouton
-                    <strong>"Ouvrir sur ce téléphone"</strong>
-                    ci-contre. Microsoft Authenticator devrait ouvrir
-                    directement vos identités numériques
+                    {{ i18n.t("verification.step2a") }}
                   </li>
                   <br />
                   <li>
-                    <u>Vous êtes sur un autre appareil</u>. Lancez Microsoft
-                    Authenticator sur votre smartphone, sélectionnez l'option
-                    <strong>Scanner un QR code</strong> puis scannez le QR code
-                    affiché à gauche.
+                    {{ i18n.t("verification.step2b") }}
                   </li>
                 </ul>
               </li>
               <li class="list-group-item border-0 px-0">
-                Sélectionner votre identité numérique
-                <strong>Employé vérifié</strong> dans Microsoft Authenticator.
+                {{ i18n.t("verification.step3") }}
               </li>
               <li class="list-group-item border-0 px-0">
-                Confirmer le partage.
+                {{ i18n.t("verification.step4") }}
               </li>
             </ol>
           </div>
@@ -166,13 +167,12 @@
   @if (state() === "success") {
     <div class="card shadow-sm border-success">
       <div class="card-header bg-success text-white py-2">
-        <i class="bi bi-check-circle-fill me-2"></i>Identité présentée avec
-        succès
+        <i class="bi bi-check-circle-fill me-2"></i
+        >{{ i18n.t("verification.successTitle") }}
       </div>
       <div class="card-body py-3">
         <p class="text-muted mb-3">
-          Votre credential a été présenté avec succès. Le helpdesk peut
-          maintenant confirmer votre identité.
+          {{ i18n.t("verification.successBody") }}
         </p>
 
         @if (verifiedClaims(); as claims) {
@@ -193,7 +193,8 @@
         }
 
         <button class="btn btn-primary mt-4" (click)="reset()">
-          <i class="bi bi-arrow-repeat me-2"></i>Nouvelle vérification
+          <i class="bi bi-arrow-repeat me-2"></i
+          >{{ i18n.t("verification.new") }}
         </button>
       </div>
     </div>

@@ -3,12 +3,10 @@
     <div class="col-lg-8">
       <h2 class="fw-bold">
         <i class="bi bi-headset me-2 text-primary"></i>
-        Dashboard assistance
+        {{ i18n.t("assist.title") }}
       </h2>
       <p class="text-muted mb-0">
-        Générez un code d'assistance à communiquer oralement à votre
-        interlocuteur. La page se met à jour automatiquement une fois la
-        vérification effectuée.
+        {{ i18n.t("assist.subtitle") }}
       </p>
     </div>
   </div>
@@ -21,13 +19,12 @@
           class="bi bi-person-badge text-secondary mb-3"
           style="font-size: 3.5rem"
         ></i>
-        <h4 class="mb-2">Prêt à vérifier</h4>
+        <h4 class="mb-2">{{ i18n.t("assist.ready") }}</h4>
         <p class="text-muted mb-4">
-          Cliquez sur le bouton pour générer un code de vérification à
-          transmettre au salarié.
+          {{ i18n.t("assist.readyBody") }}
         </p>
         <button class="btn btn-primary px-5" (click)="startSession()">
-          <i class="bi bi-shield-plus me-2"></i>Démarrer une vérification
+          <i class="bi bi-shield-plus me-2"></i>{{ i18n.t("assist.start") }}
         </button>
       </div>
     </div>
@@ -38,9 +35,11 @@
     <div class="card shadow-sm border-0">
       <div class="card-body py-5 text-center">
         <div class="spinner-border text-primary mb-3" role="status">
-          <span class="visually-hidden">Chargement...</span>
+          <span class="visually-hidden">{{
+            i18n.t("assist.loadingHint")
+          }}</span>
         </div>
-        <p class="text-muted mb-0">Création de la session…</p>
+        <p class="text-muted mb-0">{{ i18n.t("assist.loading") }}</p>
       </div>
     </div>
   }
@@ -52,16 +51,17 @@
       <div class="col-12 col-md-5">
         <div class="card shadow-sm border-0 h-100">
           <div class="card-header bg-primary text-white py-2">
-            <i class="bi bi-chat-square-dots me-2"></i>Code à communiquer
+            <i class="bi bi-chat-square-dots me-2"></i
+            >{{ i18n.t("assist.codeCard") }}
           </div>
           <div
             class="card-body d-flex flex-column align-items-center gap-3 py-4"
           >
             <div class="code-block w-100 text-center">
-              <div class="code-label">Code d'assistance</div>
+              <div class="code-label">{{ i18n.t("assist.codeLabel") }}</div>
               <div class="code-digits">{{ assistanceCode() }}</div>
               <div class="code-hint">
-                Communiqué ce code à votre interlocuteur
+                {{ i18n.t("assist.codeHint") }}
               </div>
             </div>
 
@@ -74,14 +74,15 @@
                 class="spinner-border spinner-border-sm flex-shrink-0"
                 aria-hidden="true"
               ></div>
-              <span>En attente de la vérification…</span>
+              <span>{{ i18n.t("assist.waiting") }}</span>
             </div>
 
             <button
               class="btn btn-outline-secondary w-100 mt-auto"
               (click)="reset()"
             >
-              <i class="bi bi-arrow-counterclockwise me-1"></i>Annuler
+              <i class="bi bi-arrow-counterclockwise me-1"></i
+              >{{ i18n.t("assist.cancel") }}
             </button>
           </div>
         </div>
@@ -91,34 +92,27 @@
       <div class="col-12 col-md-7">
         <div class="card shadow-sm border-0 h-100">
           <div class="card-header py-2">
-            <i class="bi bi-list-ol me-2"></i>Instructions
+            <i class="bi bi-list-ol me-2"></i
+            >{{ i18n.t("assist.instructions") }}
           </div>
           <div class="card-body py-3">
             <ol
               class="list-group list-group-flush list-group-numbered step-list mb-0"
             >
               <li class="list-group-item border-0 px-0">
-                Invitez votre interlocuteur à se connecter au portail
-                <strong>{{ portalUrl }}</strong
-                >.
+                {{ i18n.t("assist.step1", { portalUrl }) }}
               </li>
               <li class="list-group-item border-0 px-0">
-                Communiquez oralement le code
-                <strong>{{ assistanceCode() }}</strong
-                >.
+                {{ i18n.t("assist.step2", { code: assistanceCode() }) }}
               </li>
               <li class="list-group-item border-0 px-0">
-                Votre interlocuteur saisit ce code sur le portail
-                <strong>VerifID</strong> (<code>/verify</code>).
+                {{ i18n.t("assist.step3") }}
               </li>
               <li class="list-group-item border-0 px-0">
-                Il scanne le QR code généré avec
-                <strong>Microsoft Authenticator</strong> ou appuye sur le bouton
-                "Ouvrir sur ce téléphone" s'il est sur le même appareil.
+                {{ i18n.t("assist.step4") }}
               </li>
               <li class="list-group-item border-0 px-0">
-                Les informations vérifiées s'affichent automatiquement sur cette
-                page.
+                {{ i18n.t("assist.step5") }}
               </li>
             </ol>
           </div>
@@ -131,15 +125,15 @@
   @if (state() === "success") {
     <div class="card shadow-sm border-success">
       <div class="card-header bg-success text-white py-2">
-        <i class="bi bi-check-circle-fill me-2"></i>Identité vérifiée avec
-        succès
+        <i class="bi bi-check-circle-fill me-2"></i
+        >{{ i18n.t("assist.successTitle") }}
       </div>
       <div class="card-body py-3">
         @if (verifiedClaims(); as claims) {
           @if (verifiedFullName(claims); as fullName) {
             <div class="verified-person mb-4">
               <div class="text-uppercase small fw-semibold text-muted">
-                Personne vérifiée
+                {{ i18n.t("assist.verifiedPerson") }}
               </div>
               <div class="verified-person-name">{{ fullName }}</div>
             </div>
@@ -153,7 +147,7 @@
                     <th class="table-light w-35">
                       {{ claimLabel(entry.key) }}
                     </th>
-                    <td>{{ entry.value || "Non renseigné" }}</td>
+                    <td>{{ entry.value || i18n.t("assist.notProvided") }}</td>
                   </tr>
                 }
               </tbody>
@@ -162,7 +156,7 @@
         }
 
         <button class="btn btn-primary mt-4" (click)="reset()">
-          <i class="bi bi-arrow-repeat me-2"></i>Nouvelle vérification
+          <i class="bi bi-arrow-repeat me-2"></i>{{ i18n.t("assist.new") }}
         </button>
       </div>
     </div>
@@ -172,11 +166,12 @@
   @if (state() === "error") {
     <div class="alert alert-danger shadow-sm" role="alert">
       <div class="fw-semibold mb-1">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>Erreur
+        <i class="bi bi-exclamation-triangle-fill me-2"></i
+        >{{ i18n.t("assist.errorTitle") }}
       </div>
       <div class="mb-3">{{ errorMessage() }}</div>
       <button class="btn btn-outline-danger btn-sm" (click)="reset()">
-        <i class="bi bi-arrow-repeat me-1"></i>Réessayer
+        <i class="bi bi-arrow-repeat me-1"></i>{{ i18n.t("assist.retry") }}
       </button>
     </div>
   }

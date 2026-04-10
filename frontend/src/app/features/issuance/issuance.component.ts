@@ -5,6 +5,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { form, FormField, required } from '@angular/forms/signals';
+import { I18nService } from '../../core/services/i18n.service';
 import {
   VerifiedIdService,
   EmployeeIssuanceRequest,
@@ -21,6 +22,7 @@ type IssueState = 'form' | 'loading' | 'qr' | 'success' | 'error';
 })
 export class IssuanceComponent {
   private readonly verifiedIdService = inject(VerifiedIdService);
+  readonly i18n = inject(I18nService);
 
   state = signal<IssueState>('form');
   qrCode = signal<string>('');
@@ -61,9 +63,7 @@ export class IssuanceComponent {
       },
       error: () => {
         this.state.set('error');
-        this.errorMessage.set(
-          'Impossible de créer la demande d\'émission. Veuillez réessayer.'
-        );
+        this.errorMessage.set(this.i18n.t('issuance.error'));
       },
     });
   }
