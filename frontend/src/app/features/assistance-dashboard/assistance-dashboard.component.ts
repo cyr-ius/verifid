@@ -41,6 +41,8 @@ export class AssistanceDashboardComponent implements OnDestroy {
 
   readonly errorMessage = signal("");
 
+  readonly portalUrl = window.location.origin;
+
   private pollSubscription?: Subscription;
 
   /** Start a new helpdesk assistance session. */

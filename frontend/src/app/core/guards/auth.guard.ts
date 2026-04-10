@@ -1,6 +1,6 @@
 import { inject } from "@angular/core";
 import { CanActivateFn, Router } from "@angular/router";
-import { from, map } from "rxjs";
+import { from, map, switchMap } from "rxjs";
 import { AuthService } from "../services/auth.service";
 
 /** Redirects to /verify if the user is not authenticated. */
@@ -13,7 +13,9 @@ export const authGuard: CanActivateFn = () => {
 export const helpdeskGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
-  return from(authService.ensureAuthenticated()).pipe(
+  // Wait for MSAL init (roles are restored from token cache) before checking
+  return from(authService.initialized$).pipe(
+    switchMap(() => from(authService.ensureAuthenticated())),
     map((authenticated) => {
       if (!authenticated) {
         return false;
@@ -30,7 +32,8 @@ export const helpdeskGuard: CanActivateFn = () => {
 export const hrGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
   const router = inject(Router);
-  return from(authService.ensureAuthenticated()).pipe(
+  return from(authService.initialized$).pipe(
+    switchMap(() => from(authService.ensureAuthenticated())),
     map((authenticated) => {
       if (!authenticated) {
         return false;

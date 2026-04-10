@@ -13,7 +13,6 @@ import { StatusResponse } from "./status.service";
 const PUBLIC_API_PATHS = ["/api/health", "/api/v1/status"];
 
 // Prefix-based public endpoint patterns.
-// POST /api/v1/verified-id/verify/{code} is public (employee side, no login required).
 const PUBLIC_API_PREFIXES = [
   "/api/v1/verified-id/verify/",
   "/api/v1/verified-id/status/",
@@ -26,6 +25,12 @@ export class AuthService {
   private authEnabled = false;
   private scopes: string[] = [];
   private initialized = false;
+
+  /** Resolves to true once MSAL has fully initialized (redirect handled, account restored). */
+  private initResolve!: (value: boolean) => void;
+  readonly initialized$ = new Promise<boolean>(
+    (resolve) => (this.initResolve = resolve),
+  );
 
   readonly account = signal<AccountInfo | null>(null);
   readonly isAuthenticated = computed(() => this.account() !== null);
@@ -64,6 +69,7 @@ export class AuthService {
     this.initialized = true;
 
     if (!this.authEnabled) {
+      this.initResolve(true);
       return;
     }
 
@@ -80,6 +86,7 @@ export class AuthService {
     });
 
     await this.msal.initialize();
+
     this.msal.addEventCallback((event: EventMessage) => {
       if (
         event.eventType === EventType.LOGIN_SUCCESS ||
@@ -91,23 +98,7 @@ export class AuthService {
         }
 
         if (payload?.accessToken) {
-          try {
-            const decoded = jwtDecode(payload.accessToken) as Record<
-              string,
-              unknown
-            >;
-            if (decoded && typeof decoded === "object") {
-              const rolesClaim = decoded["roles"];
-              if (Array.isArray(rolesClaim)) {
-                const roles = rolesClaim.filter(
-                  (r): r is string => typeof r === "string",
-                );
-                this.roles.set(roles);
-              }
-            }
-          } catch (e) {
-            console.warn("Failed to decode access token:", e);
-          }
+          this.extractRolesFromToken(payload.accessToken);
         }
       }
     });
@@ -115,6 +106,10 @@ export class AuthService {
     const redirectResult = await this.msal.handleRedirectPromise();
     if (redirectResult?.account) {
       this.setActiveAccount(redirectResult.account);
+      if (redirectResult.accessToken) {
+        this.extractRolesFromToken(redirectResult.accessToken);
+      }
+      this.initResolve(true);
       return;
     }
 
@@ -122,7 +117,19 @@ export class AuthService {
       this.msal.getActiveAccount() ?? this.msal.getAllAccounts()[0];
     if (existingAccount) {
       this.setActiveAccount(existingAccount);
+      // Silently acquire a token to restore roles from cache
+      try {
+        const silent = await this.msal.acquireTokenSilent({
+          account: existingAccount,
+          scopes: this.requestScopes,
+        });
+        this.extractRolesFromToken(silent.accessToken);
+      } catch {
+        // Silent acquisition failed — roles will be empty until next login
+      }
     }
+
+    this.initResolve(true);
   }
 
   async login(): Promise<void> {
@@ -186,11 +193,30 @@ export class AuthService {
     if (!this.authEnabled) {
       return true;
     }
+    // Wait for MSAL to fully initialize before checking auth state
+    await this.initialized$;
     if (this.isAuthenticated()) {
       return true;
     }
     await this.login();
     return false;
+  }
+
+  private extractRolesFromToken(token: string): void {
+    try {
+      const decoded = jwtDecode(token) as Record<string, unknown>;
+      if (decoded && typeof decoded === "object") {
+        const rolesClaim = decoded["roles"];
+        if (Array.isArray(rolesClaim)) {
+          const roles = rolesClaim.filter(
+            (r): r is string => typeof r === "string",
+          );
+          this.roles.set(roles);
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to decode access token:", e);
+    }
   }
 
   private setActiveAccount(account: AccountInfo): void {

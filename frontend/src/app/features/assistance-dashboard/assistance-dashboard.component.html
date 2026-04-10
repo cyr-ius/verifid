@@ -6,8 +6,9 @@
         Dashboard assistance
       </h2>
       <p class="text-muted mb-0">
-        Générez un code d'assistance à communiquer oralement au salarié. La page
-        se met à jour automatiquement une fois la vérification effectuée.
+        Générez un code d'assistance à communiquer oralement à votre
+        interlocuteur. La page se met à jour automatiquement une fois la
+        vérification effectuée.
       </p>
     </div>
   </div>
@@ -59,7 +60,9 @@
             <div class="code-block w-100 text-center">
               <div class="code-label">Code d'assistance</div>
               <div class="code-digits">{{ assistanceCode() }}</div>
-              <div class="code-hint">Lisez ce code à voix haute au salarié</div>
+              <div class="code-hint">
+                Communiqué ce code à votre interlocuteur
+              </div>
             </div>
 
             <!-- Polling indicator -->
@@ -71,7 +74,7 @@
                 class="spinner-border spinner-border-sm flex-shrink-0"
                 aria-hidden="true"
               ></div>
-              <span>En attente de la vérification du salarié…</span>
+              <span>En attente de la vérification…</span>
             </div>
 
             <button
@@ -95,16 +98,23 @@
               class="list-group list-group-flush list-group-numbered step-list mb-0"
             >
               <li class="list-group-item border-0 px-0">
-                Communiquez le code
-                <strong>{{ assistanceCode() }}</strong> oralement au salarié.
+                Invitez votre interlocuteur à se connecter au portail
+                <strong>{{ portalUrl }}</strong
+                >.
               </li>
               <li class="list-group-item border-0 px-0">
-                Le salarié saisit ce code sur le portail
+                Communiquez oralement le code
+                <strong>{{ assistanceCode() }}</strong
+                >.
+              </li>
+              <li class="list-group-item border-0 px-0">
+                Votre interlocuteur saisit ce code sur le portail
                 <strong>VerifID</strong> (<code>/verify</code>).
               </li>
               <li class="list-group-item border-0 px-0">
                 Il scanne le QR code généré avec
-                <strong>Microsoft Authenticator</strong>.
+                <strong>Microsoft Authenticator</strong> ou appuye sur le bouton
+                "Ouvrir sur ce téléphone" s'il est sur le même appareil.
               </li>
               <li class="list-group-item border-0 px-0">
                 Les informations vérifiées s'affichent automatiquement sur cette
