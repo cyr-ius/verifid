@@ -2,11 +2,23 @@
 
 **VerifID** is a contact verification portal based on **Microsoft Entra Verified ID**.
 
+<img width="916" height="157" alt="image" src="https://github.com/user-attachments/assets/6cad31dd-1882-40f8-bb40-15fca81b5c96" />
+
+
 It allows HR teams to provide verifiable credentials to employees. It also provides support teams with a way to verify their identity without a password, using a QR code and Microsoft Authenticator.
 
 The goal is to limit identity theft and fraud.
 
+Microsoft Verified ID provides:
+- Digital fingerprint generation via the "My account" page
+- Digital fingerprint creation and verification APIs
+
+This development offers a user-friendly interface focused on verifying the identity of the person you are interacting with.
+
 [Verified ID](https://www.microsoft.com/en-us/security/business/identity-access/microsoft-entra-verified-id) For more information, you can visit the Microsoft website.
+
+The development carried out is based on the examples provided by Microsoft in the [Azure-Samples repository](https://github.com/Azure-Samples/active-directory-verifiable-credentials)
+
 
 ---
 
