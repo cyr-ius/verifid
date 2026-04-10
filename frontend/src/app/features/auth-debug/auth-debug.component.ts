@@ -1,6 +1,7 @@
 import { CommonModule } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
 import { Component, inject, signal } from "@angular/core";
+import { I18nService } from "../../core/services/i18n.service";
 import {
   CurrentPrincipalResponse,
   StatusService,
@@ -17,6 +18,7 @@ type DebugState = "loading" | "success" | "error";
 })
 export class AuthDebugComponent {
   private readonly statusService = inject(StatusService);
+  readonly i18n = inject(I18nService);
 
   readonly state = signal<DebugState>("loading");
   readonly principal = signal<CurrentPrincipalResponse | null>(null);
@@ -38,7 +40,7 @@ export class AuthDebugComponent {
       error: (error: HttpErrorResponse) => {
         this.principal.set(null);
         this.errorMessage.set(
-          error.error?.detail || "Impossible de récupérer les informations du token."
+          error.error?.detail || this.i18n.t("auth.error.fetch")
         );
         this.state.set("error");
       },

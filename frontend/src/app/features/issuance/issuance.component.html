@@ -4,11 +4,10 @@
     <div class="col">
       <h2 class="fw-bold">
         <i class="bi bi-award me-2 text-primary"></i>
-        Émettre un credential salarié
+        {{ i18n.t("issuance.title") }}
       </h2>
       <p class="text-muted">
-        Remplissez les informations du salarié. Un QR code sera généré pour
-        qu'il enregistre son credential dans Microsoft Authenticator.
+        {{ i18n.t("issuance.subtitle") }}
       </p>
     </div>
   </div>
@@ -17,72 +16,73 @@
   @if (state() === "form" || state() === "error") {
     <div class="card shadow-sm">
       <div class="card-header bg-primary text-white">
-        <i class="bi bi-person-plus me-2"></i>Inscription
+        <i class="bi bi-person-plus me-2"></i
+        >{{ i18n.t("issuance.card.title") }}
       </div>
       <div class="card-body">
         <form (submit)="onSubmit($event)">
           <div class="row g-3">
             <div class="col-md-6">
               <label class="form-label fw-semibold" for="employeeId">
-                Matricule salarié *
+                {{ i18n.t("issuance.employeeId") }}
               </label>
               <input
                 id="employeeId"
                 type="text"
                 class="form-control"
-                placeholder="EMP-00123"
+                [placeholder]="i18n.t('issuance.employeeIdPlaceholder')"
                 [formField]="employeeForm.employee_id"
               />
             </div>
 
             <div class="col-md-6">
               <label class="form-label fw-semibold" for="givenName">
-                Prénom *
+                {{ i18n.t("issuance.givenName") }}
               </label>
               <input
                 id="givenName"
                 type="text"
                 class="form-control"
-                placeholder="Jean"
+                [placeholder]="i18n.t('issuance.givenNamePlaceholder')"
                 [formField]="employeeForm.given_name"
               />
             </div>
 
             <div class="col-md-6">
               <label class="form-label fw-semibold" for="familyName">
-                Nom *
+                {{ i18n.t("issuance.familyName") }}
               </label>
               <input
                 id="familyName"
                 type="text"
                 class="form-control"
-                placeholder="Dupont"
+                [placeholder]="i18n.t('issuance.familyNamePlaceholder')"
                 [formField]="employeeForm.family_name"
               />
             </div>
 
             <div class="col-md-6">
               <label class="form-label fw-semibold" for="jobTitle">
-                Poste *
+                {{ i18n.t("issuance.jobTitle") }}
               </label>
               <input
                 id="jobTitle"
                 type="text"
                 class="form-control"
-                placeholder="Développeur Senior"
+                [placeholder]="i18n.t('issuance.jobTitlePlaceholder')"
                 [formField]="employeeForm.job_title"
               />
             </div>
 
             <div class="col-md-6">
               <label class="form-label fw-semibold" for="department">
-                Département *
+                {{ i18n.t("issuance.department") }}
               </label>
               <input
                 id="department"
                 type="text"
                 class="form-control"
-                placeholder="Informatique"
+                [placeholder]="i18n.t('issuance.departmentPlaceholder')"
                 [formField]="employeeForm.department"
               />
             </div>
@@ -97,7 +97,7 @@
 
           <div class="mt-4">
             <button type="submit" class="btn btn-primary px-5">
-              <i class="bi bi-send me-2"></i>Émettre le credential
+              <i class="bi bi-send me-2"></i>{{ i18n.t("issuance.submit") }}
             </button>
           </div>
         </form>
@@ -110,7 +110,7 @@
     <div class="card shadow-sm">
       <div class="card-body text-center py-5">
         <div class="spinner-border text-primary mb-3" role="status"></div>
-        <p class="text-muted">Création de la demande d'émission…</p>
+        <p class="text-muted">{{ i18n.t("issuance.loading") }}</p>
       </div>
     </div>
   }
@@ -121,12 +121,12 @@
       <div class="col-md-5">
         <div class="card shadow-sm">
           <div class="card-header bg-primary text-white">
-            <i class="bi bi-qr-code me-2"></i>QR Code d'enrôlement
+            <i class="bi bi-qr-code me-2"></i>{{ i18n.t("issuance.qrTitle") }}
           </div>
           <div class="card-body text-center py-4">
             <img
               [src]="qrCode()"
-              alt="QR Code émission"
+              [alt]="i18n.t('issuance.qrAlt')"
               class="img-fluid qr-image mb-3"
             />
             @if (deepLink()) {
@@ -134,7 +134,8 @@
                 [href]="deepLink()"
                 class="btn btn-outline-primary btn-sm d-block"
               >
-                <i class="bi bi-phone me-1"></i>Lien mobile
+                <i class="bi bi-phone me-1"></i
+                >{{ i18n.t("issuance.mobileLink") }}
               </a>
             }
           </div>
@@ -144,29 +145,27 @@
       <div class="col-md-7">
         <div class="card shadow-sm h-100">
           <div class="card-header">
-            <i class="bi bi-info-circle me-2"></i>Instructions
+            <i class="bi bi-info-circle me-2"></i
+            >{{ i18n.t("issuance.instructions") }}
           </div>
           <div class="card-body">
             <ol class="list-group list-group-flush list-group-numbered">
               <li class="list-group-item border-0">
-                Montrez ce QR code ou envoyez-lui le lien mobile.
+                {{ i18n.t("issuance.step1") }}
               </li>
               <li class="list-group-item border-0">
-                Ouvrir <strong>Microsoft Authenticator</strong> et scanne le
-                code.
+                {{ i18n.t("issuance.step2") }}
               </li>
               <li class="list-group-item border-0">
-                Il accepte la réception du credential
-                <strong>Employé vérifié</strong>.
+                {{ i18n.t("issuance.step3") }}
               </li>
               <li class="list-group-item border-0">
-                Le credential est maintenant stocké dans son wallet et peut être
-                présenté au helpdesk.
+                {{ i18n.t("issuance.step4") }}
               </li>
             </ol>
             <button class="btn btn-outline-secondary mt-3" (click)="reset()">
               <i class="bi bi-arrow-counterclockwise me-1"></i>
-              Émettre un autre credential
+              {{ i18n.t("issuance.reset") }}
             </button>
           </div>
         </div>

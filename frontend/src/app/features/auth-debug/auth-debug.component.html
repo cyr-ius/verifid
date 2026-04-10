@@ -3,16 +3,15 @@
     <div class="col-lg-9">
       <h2 class="fw-bold">
         <i class="bi bi-key-fill me-2 text-primary"></i>
-        Mon accès
+        {{ i18n.t("auth.title") }}
       </h2>
       <p class="text-muted mb-0">
-        Cette page appelle <code>/api/v1/status/me</code> et affiche exactement
-        ce que le backend reçoit dans votre token Entra ID.
+        {{ i18n.t("auth.subtitle") }}
       </p>
     </div>
     <div class="col-lg-3 text-lg-end mt-3 mt-lg-0">
       <button class="btn btn-primary" (click)="refresh()">
-        <i class="bi bi-arrow-repeat me-2"></i>Rafraîchir
+        <i class="bi bi-arrow-repeat me-2"></i>{{ i18n.t("auth.refresh") }}
       </button>
     </div>
   </div>
@@ -21,14 +20,14 @@
     <div class="card shadow-sm border-0">
       <div class="card-body py-5 text-center">
         <div class="spinner-border text-primary mb-3" role="status"></div>
-        <p class="text-muted mb-0">Lecture du token en cours…</p>
+        <p class="text-muted mb-0">{{ i18n.t("auth.loading") }}</p>
       </div>
     </div>
   }
 
   @if (state() === "error") {
     <div class="alert alert-danger shadow-sm" role="alert">
-      <div class="fw-semibold mb-1">Impossible de lire le token</div>
+      <div class="fw-semibold mb-1">{{ i18n.t("auth.errorTitle") }}</div>
       <div>{{ errorMessage() }}</div>
     </div>
   }
@@ -40,16 +39,18 @@
           <div class="card-body p-4">
             <div class="mb-3">
               <div class="small text-uppercase text-muted fw-semibold">
-                Utilisateur
+                {{ i18n.t("auth.user") }}
               </div>
-              <div class="fw-semibold">{{ me.name || "Non renseigné" }}</div>
+              <div class="fw-semibold">
+                {{ me.name || i18n.t("auth.noValue") }}
+              </div>
               <div class="text-muted small">
-                {{ me.preferred_username || "Non renseigné" }}
+                {{ me.preferred_username || i18n.t("auth.noValue") }}
               </div>
             </div>
             <div class="mb-3">
               <div class="small text-uppercase text-muted fw-semibold">
-                Roles
+                {{ i18n.t("auth.roles") }}
               </div>
               @if (me.roles.length > 0) {
                 <div class="d-flex flex-wrap gap-2 mt-2">
@@ -58,28 +59,32 @@
                   }
                 </div>
               } @else {
-                <div class="text-muted">Aucun role dans le token</div>
+                <div class="text-muted">{{ i18n.t("auth.noRoles") }}</div>
               }
             </div>
             <div class="mb-3">
               <div class="small text-uppercase text-muted fw-semibold">
-                Scopes
+                {{ i18n.t("auth.scopes") }}
               </div>
               <div class="token-box">
-                {{ me.scp || "Aucun scope dans le token" }}
+                {{ me.scp || i18n.t("auth.noScopes") }}
               </div>
             </div>
             <div class="mb-3">
               <div class="small text-uppercase text-muted fw-semibold">
-                Audience
+                {{ i18n.t("auth.audience") }}
               </div>
-              <div class="token-box">{{ me.aud || "Non renseignée" }}</div>
+              <div class="token-box">
+                {{ me.aud || i18n.t("auth.noValue") }}
+              </div>
             </div>
             <div>
               <div class="small text-uppercase text-muted fw-semibold">
-                Issuer
+                {{ i18n.t("auth.issuer") }}
               </div>
-              <div class="token-box">{{ me.iss || "Non renseigné" }}</div>
+              <div class="token-box">
+                {{ me.iss || i18n.t("auth.noValue") }}
+              </div>
             </div>
           </div>
         </div>
@@ -88,10 +93,9 @@
       <div class="col-xl-7">
         <div class="card shadow-sm border-0 h-100">
           <div class="card-header bg-white border-0 pt-4 px-4">
-            <h5 class="mb-1">Payload brut du token</h5>
+            <h5 class="mb-1">{{ i18n.t("auth.rawTitle") }}</h5>
             <p class="text-muted mb-0">
-              Copiez ces informations si vous voulez que je vérifie les droits
-              avec vous.
+              {{ i18n.t("auth.rawHelp") }}
             </p>
           </div>
           <div class="card-body px-4 pb-4">

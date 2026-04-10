@@ -11,6 +11,7 @@ import { CommonModule } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
 import { Component, OnDestroy, inject, signal } from "@angular/core";
 import { Subscription } from "rxjs";
+import { I18nService } from "../../core/services/i18n.service";
 import {
   VerificationStatus,
   VerifiedIdService,
@@ -27,6 +28,7 @@ type DashboardState = "idle" | "loading" | "waiting" | "success" | "error";
 })
 export class AssistanceDashboardComponent implements OnDestroy {
   private readonly verifiedIdService = inject(VerifiedIdService);
+  readonly i18n = inject(I18nService);
 
   readonly state = signal<DashboardState>("idle");
 
@@ -62,7 +64,7 @@ export class AssistanceDashboardComponent implements OnDestroy {
         this.state.set("error");
         this.errorMessage.set(
           error.error?.detail ||
-            "Impossible de créer la session de vérification. Veuillez réessayer.",
+            this.i18n.t("assist.error.create"),
         );
       },
     });
@@ -81,16 +83,14 @@ export class AssistanceDashboardComponent implements OnDestroy {
             this.state.set("success");
           } else if (status.status === "error") {
             this.errorMessage.set(
-              status.error_message ?? "La vérification a échoué.",
+              status.error_message ?? this.i18n.t("assist.error.failed"),
             );
             this.state.set("error");
           }
         },
         error: () => {
           this.state.set("error");
-          this.errorMessage.set(
-            "Erreur de communication avec le serveur. Veuillez réessayer.",
-          );
+          this.errorMessage.set(this.i18n.t("assist.error.communication"));
         },
       });
   }
@@ -112,15 +112,15 @@ export class AssistanceDashboardComponent implements OnDestroy {
   statusLabel(status: string): string {
     switch (status) {
       case "success":
-        return "Vérification réussie";
+        return this.i18n.t("assist.status.success");
       case "waiting":
-        return "En attente";
+        return this.i18n.t("assist.status.waiting");
       case "error":
-        return "Échec de vérification";
+        return this.i18n.t("assist.status.error");
       case "expired":
-        return "Code expiré";
+        return this.i18n.t("assist.status.expired");
       default:
-        return "Statut inconnu";
+        return this.i18n.t("assist.status.unknown");
     }
   }
 
@@ -136,15 +136,15 @@ export class AssistanceDashboardComponent implements OnDestroy {
   claimLabel(key: string): string {
     switch (key) {
       case "given_name":
-        return "Prénom";
+        return this.i18n.t("claim.given_name");
       case "family_name":
-        return "Nom";
+        return this.i18n.t("claim.family_name");
       case "employee_id":
-        return "Identifiant employé";
+        return this.i18n.t("claim.employee_id");
       case "job_title":
-        return "Poste";
+        return this.i18n.t("claim.job_title");
       case "department":
-        return "Département";
+        return this.i18n.t("claim.department");
       default:
         return key;
     }

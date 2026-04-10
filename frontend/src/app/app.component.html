@@ -2,15 +2,15 @@
   <div class="container">
     <a
       class="navbar-brand fw-bold d-flex align-items-center gap-2"
-      routerLink="/"
+      [routerLink]="localizedLink('verify')"
     >
       @if (logoUrl() != "") {
         <img [src]="logoUrl()" alt="Logo" class="brand-logo" />
       } @else {
         <i class="bi bi-shield-lock-fill"></i>
       }
-      <span class="d-none d-sm-inline">Verified ID Portal</span>
-      <span class="d-inline d-sm-none">VerifID</span>
+      <span class="d-none d-sm-inline">{{ i18n.t("brand.portal") }}</span>
+      <span class="d-inline d-sm-none">{{ i18n.t("brand.short") }}</span>
     </a>
 
     <button
@@ -20,7 +20,7 @@
       data-bs-target="#mainNav"
       aria-controls="mainNav"
       aria-expanded="false"
-      aria-label="Toggle navigation"
+      [attr.aria-label]="i18n.t('nav.toggle')"
     >
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -32,30 +32,56 @@
         <li class="nav-item">
           <a
             class="nav-link"
-            routerLink="/verify"
+            [routerLink]="localizedLink('verify')"
             routerLinkActive="active"
             aria-current="page"
           >
-            <i class="bi bi-shield-check me-2"></i>Vérification
+            <i class="bi bi-shield-check me-2"></i>{{ i18n.t("nav.verify") }}
           </a>
         </li>
         <!-- Assistance — helpdesk role, or auth disabled -->
         @if (authService.isHelpdesk()) {
           <li class="nav-item">
-            <a class="nav-link" routerLink="/assist" routerLinkActive="active">
-              <i class="bi bi-headset me-2"></i>Assistance
+            <a
+              class="nav-link"
+              [routerLink]="localizedLink('assist')"
+              routerLinkActive="active"
+            >
+              <i class="bi bi-headset me-2"></i>{{ i18n.t("nav.assist") }}
             </a>
           </li>
         }
         <!-- Émission — hr role, or auth disabled -->
         @if (authService.isHR()) {
           <li class="nav-item">
-            <a class="nav-link" routerLink="/issue" routerLinkActive="active">
-              <i class="bi bi-award me-2"></i>Émission (RH)
+            <a
+              class="nav-link"
+              [routerLink]="localizedLink('issue')"
+              routerLinkActive="active"
+            >
+              <i class="bi bi-award me-2"></i>{{ i18n.t("nav.issue") }}
             </a>
           </li>
         }
       </ul>
+
+      <div class="d-flex align-items-center gap-2 ms-lg-3 mb-3 mb-lg-0">
+        <label class="text-white-50 small" for="languageSelect">
+          {{ i18n.t("nav.language") }}
+        </label>
+        <select
+          id="languageSelect"
+          class="form-select form-select-sm"
+          [value]="i18n.currentLanguage()"
+          (change)="setLanguage($any($event.target).value)"
+        >
+          @for (language of languages; track language) {
+            <option [value]="language">
+              {{ languageLabel(language) }}
+            </option>
+          }
+        </select>
+      </div>
 
       <!-- Auth controls — only rendered when auth is enabled -->
       @if (authService.isEnabled()) {
@@ -63,7 +89,11 @@
           <hr class="d-lg-none border-secondary my-2" />
           @if (authService.isAuthenticated()) {
             <li class="nav-item">
-              <a class="nav-link" routerLink="/me" routerLinkActive="active">
+              <a
+                class="nav-link"
+                [routerLink]="localizedLink('me')"
+                routerLinkActive="active"
+              >
                 <i class="bi bi-person-circle me-1"></i>
                 {{
                   authService.account()?.name || authService.account()?.username
@@ -71,11 +101,12 @@
               </a>
             </li>
             <button class="btn btn-outline-light btn-sm" (click)="logout()">
-              Se déconnecter
+              {{ i18n.t("nav.logout") }}
             </button>
           } @else {
             <button class="btn btn-light btn-sm" (click)="login()">
-              <i class="bi bi-box-arrow-in-right me-1"></i>Se connecter
+              <i class="bi bi-box-arrow-in-right me-1"></i
+              >{{ i18n.t("nav.login") }}
             </button>
           }
         </ul>
@@ -90,6 +121,6 @@
 
 <footer class="bg-white border-top py-3 text-center text-muted small">
   <i class="bi bi-shield-lock me-1"></i>
-  Microsoft Entra Verified ID
-  <span class="d-none d-sm-inline">&nbsp;|&nbsp;{{ title }}</span>
+  {{ i18n.t("footer.product") }}
+  <span class="d-none d-sm-inline">&nbsp;|&nbsp;{{ i18n.t("app.title") }}</span>
 </footer>
