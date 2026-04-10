@@ -4,8 +4,11 @@ API endpoints for Microsoft Entra Verified ID issuance and verification.
 Flows supported:
   1. Issuance  – HR issues a VerifiedEmployee credential to an employee's
                  Microsoft Authenticator wallet.
-  2. Verification – Helpdesk requests proof of identity; employee scans QR
-                    code and the result is polled by the helpdesk UI.
+  2. Verification (new flow):
+     a. Helpdesk calls POST /assist/create  → receives session_id + 4-digit code
+     b. Helpdesk communicates the code verbally to the employee
+     c. Employee calls POST /verify/{code}  → receives QR code to scan
+     d. Helpdesk polls GET /status/{session_id} until success/error
 """
 
 import logging
@@ -15,6 +18,7 @@ from fastapi import APIRouter, Depends, Header, HTTPException, status
 from ....core.config import app_settings
 from ....schemas.verified_id import (
     AssistanceLookupResponse,
+    AssistanceSessionResponse,
     EmployeeIssuanceRequest,
     IssuanceCallbackPayload,
     IssuanceResponse,
@@ -22,7 +26,12 @@ from ....schemas.verified_id import (
     PresentationResponse,
     VerificationStatus,
 )
-from ....services.storage import assign_code, create_session, find_by_code, sessions
+from ....services.storage import (
+    create_session,
+    find_by_code,
+    generate_code_for_session,
+    sessions,
+)
 from ....services.verified_id_service import (
     create_issuance_request,
     create_presentation_request,
@@ -67,7 +76,7 @@ async def issue_credential(
     Returns:
         IssuanceResponse: QR code and deep-link URL.
     """
-    session_id = create_session()
+    session_id = create_session(session_type="issuance")
 
     try:
         result = await create_issuance_request(
@@ -122,116 +131,32 @@ async def issuance_callback(
 
 
 # ---------------------------------------------------------------------------
-# Verification / presentation endpoints
+# Verification – helpdesk side
 # ---------------------------------------------------------------------------
 
 
 @router.post(
-    "/verify",
-    response_model=PresentationResponse,
-    summary="Request VC presentation from an employee (helpdesk flow)",
+    "/assist/create",
+    response_model=AssistanceSessionResponse,
+    summary="Helpdesk creates a verification session and gets a 4-digit code",
 )
-async def verify_credential() -> PresentationResponse:
+async def create_assistance_session(
+    _: dict = Depends(require_helpdesk_access),
+) -> AssistanceSessionResponse:
     """
-    Initiate a Verifiable Credential presentation request.
-    The helpdesk displays the returned QR code; the employee scans it with
-    Microsoft Authenticator to prove their identity.
+    Create a pending verification session for the helpdesk flow.
+
+    The helpdesk agent calls this endpoint to obtain a unique 4-digit code.
+    They communicate the code verbally to the employee, who then uses it
+    on the /verify/{code} page to initiate the QR presentation flow.
 
     Returns:
-        PresentationResponse: QR code and deep-link URL.
+        AssistanceSessionResponse: session_id (for polling) and the 4-digit code.
     """
-    session_id = create_session()
-    assistance_code = assign_code(session_id)
-
-    try:
-        result = await create_presentation_request(session_id=session_id)
-    except Exception as exc:
-        logger.exception("Presentation request failed: %s", exc)
-        raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY,
-            detail="Failed to create presentation request with Verified ID service.",
-        ) from exc
-
-    # Attach session_id to the response so the frontend can poll
-    result.request_id = session_id
-    result.assistance_code = assistance_code
-    return result
-
-
-@router.post(
-    "/presentation-callback",
-    status_code=status.HTTP_204_NO_CONTENT,
-    summary="Callback from Microsoft Verified ID after presentation",
-)
-async def presentation_callback(
-    payload: PresentationCallbackPayload,
-    api_key: str = Header(alias="api-key"),
-) -> None:
-    """
-    Receives status updates from the Microsoft Verified ID service after
-    a presentation attempt.  Updates the session store so the polling
-    endpoint can inform the helpdesk UI.
-
-    Args:
-        payload: Callback payload from Microsoft.
-        api_key: API key header for security.
-    """
-    if api_key != app_settings.API_KEY:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
-
-    session = sessions.get(payload.state, {})
-
-    if payload.request_status == "presentation_verified":
-        session["status"] = "success"
-        session["claims"] = _extract_presented_claims(payload)
-        logger.debug("Presentation verified for session %s", payload.state)
-    elif payload.request_status in ("presentation_error", "request_retrieved"):
-        if payload.request_status == "presentation_error":
-            session["status"] = "error"
-            session["error_message"] = (
-                payload.error.message if payload.error else "Presentation failed"
-            )
-            logger.warning("Presentation error for session %s", payload.state)
-    # "request_retrieved" means the user scanned the QR code – keep pending
-
-    sessions[payload.state] = session
-
-
-# ---------------------------------------------------------------------------
-# Polling endpoint
-# ---------------------------------------------------------------------------
-
-
-@router.get(
-    "/status/{session_id}",
-    response_model=VerificationStatus,
-    summary="Poll verification / issuance session status",
-)
-async def get_session_status(session_id: str) -> VerificationStatus:
-    """
-    Returns the current status of an issuance or verification session.
-    The frontend polls this endpoint after displaying the QR code.
-
-    Args:
-        session_id: UUID returned when the request was created.
-
-    Returns:
-        VerificationStatus: Current status and optional claims.
-    """
-    session = sessions.get(session_id)
-    if session is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Session {session_id} not found.",
-        )
-
-    return VerificationStatus(
-        session_id=session_id,
-        status=session.get("status", "pending"),
-        claims=session.get("claims"),
-        code=session.get("code"),
-        error_message=session.get("error_message"),
-    )
+    session_id = create_session(session_type="verification")
+    code = generate_code_for_session(session_id)
+    logger.info("Assistance session created: session_id=%s code=%s", session_id, code)
+    return AssistanceSessionResponse(session_id=session_id, code=code)
 
 
 @router.get(
@@ -266,5 +191,132 @@ async def get_assistance_verification(
         status=current_status,
         is_verified=current_status == "success",
         claims=session.get("claims"),
+        error_message=session.get("error_message"),
+    )
+
+
+# ---------------------------------------------------------------------------
+# Verification – employee side
+# ---------------------------------------------------------------------------
+
+
+@router.post(
+    "/verify/{code}",
+    response_model=PresentationResponse,
+    summary="Employee initiates QR verification using the helpdesk-provided code",
+)
+async def verify_credential_by_code(code: str) -> PresentationResponse:
+    """
+    Employee submits the 4-digit code received verbally from the helpdesk.
+    A QR code is generated for them to scan with Microsoft Authenticator.
+
+    The verification result is stored against the session that the helpdesk
+    is already polling via GET /status/{session_id}.
+
+    Args:
+        code: 4-digit code communicated by the helpdesk agent.
+
+    Returns:
+        PresentationResponse: QR code and deep-link URL for the employee.
+    """
+    session_id, session = find_by_code(code)
+    if session_id is None or session is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Code introuvable. Vérifiez le code communiqué par le helpdesk.",
+        )
+
+    if session.get("status") != "pending":
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Ce code a déjà été utilisé ou a expiré.",
+        )
+
+    try:
+        result = await create_presentation_request(session_id=session_id)
+    except Exception as exc:
+        logger.exception("Presentation request failed: %s", exc)
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail="Failed to create presentation request with Verified ID service.",
+        ) from exc
+
+    # Expose the session_id so the employee page can poll its own status.
+    result.request_id = session_id
+    result.assistance_code = code
+    return result
+
+
+@router.post(
+    "/presentation-callback",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Callback from Microsoft Verified ID after presentation",
+)
+async def presentation_callback(
+    payload: PresentationCallbackPayload,
+    api_key: str = Header(alias="api-key"),
+) -> None:
+    """
+    Receives status updates from the Microsoft Verified ID service after
+    a presentation attempt.  Updates the session store so both the employee
+    and the helpdesk polling endpoints are notified.
+
+    Args:
+        payload: Callback payload from Microsoft.
+        api_key: API key header for security.
+    """
+    if api_key != app_settings.API_KEY:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
+    session = sessions.get(payload.state, {})
+
+    if payload.request_status == "presentation_verified":
+        session["status"] = "success"
+        session["claims"] = _extract_presented_claims(payload)
+        logger.info("Presentation verified for session %s", payload.state)
+    elif payload.request_status == "presentation_error":
+        session["status"] = "error"
+        session["error_message"] = (
+            payload.error.message if payload.error else "Presentation failed"
+        )
+        logger.warning("Presentation error for session %s", payload.state)
+    # "request_retrieved" means the employee scanned the QR – keep pending
+
+    sessions[payload.state] = session
+
+
+# ---------------------------------------------------------------------------
+# Polling endpoint (shared by helpdesk and employee)
+# ---------------------------------------------------------------------------
+
+
+@router.get(
+    "/status/{session_id}",
+    response_model=VerificationStatus,
+    summary="Poll verification / issuance session status",
+)
+async def get_session_status(session_id: str) -> VerificationStatus:
+    """
+    Returns the current status of an issuance or verification session.
+    Both the employee page and the helpdesk dashboard poll this endpoint.
+
+    Args:
+        session_id: UUID returned when the session was created.
+
+    Returns:
+        VerificationStatus: Current status and optional claims.
+    """
+    session = sessions.get(session_id)
+    if session is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Session {session_id} not found.",
+        )
+
+    return VerificationStatus(
+        session_id=session_id,
+        status=session.get("status", "pending"),
+        claims=session.get("claims"),
+        code=session.get("code"),
         error_message=session.get("error_message"),
     )

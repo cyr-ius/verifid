@@ -9,12 +9,16 @@ import {
 import { jwtDecode } from "jwt-decode";
 import { StatusResponse } from "./status.service";
 
-const PUBLIC_API_PATHS = [
-  "/api/health",
-  "/api/v1/status",
-  "/api/v1/verified-id/verify",
+// Public endpoints that do not require a bearer token.
+const PUBLIC_API_PATHS = ["/api/health", "/api/v1/status"];
+
+// Prefix-based public endpoint patterns.
+// POST /api/v1/verified-id/verify/{code} is public (employee side, no login required).
+const PUBLIC_API_PREFIXES = [
+  "/api/v1/verified-id/verify/",
+  "/api/v1/verified-id/status/",
+  "/api/v1/verified-id/presentation-callback",
 ];
-const PUBLIC_API_PREFIXES = ["/api/v1/verified-id/status/"];
 
 @Injectable({ providedIn: "root" })
 export class AuthService {

@@ -1,76 +1,117 @@
+/**
+ * AssistanceDashboardComponent – Helpdesk verification flow.
+ *
+ * New flow:
+ *  1. Helpdesk clicks "Démarrer" → backend creates a session and returns a 4-digit code
+ *  2. The 4-digit code is displayed prominently for the helpdesk to read aloud
+ *  3. The component polls the session until the employee completes verification
+ *  4. Claims are displayed once the verification succeeds
+ */
 import { CommonModule } from "@angular/common";
 import { HttpErrorResponse } from "@angular/common/http";
-import { Component, inject, signal } from "@angular/core";
-import { FormsModule } from "@angular/forms";
+import { Component, OnDestroy, inject, signal } from "@angular/core";
+import { Subscription } from "rxjs";
 import {
-  AssistanceLookupResponse,
+  VerificationStatus,
   VerifiedIdService,
 } from "../../core/services/verified-id.service";
 
-type LookupState = "idle" | "loading" | "success" | "error";
+type DashboardState = "idle" | "loading" | "waiting" | "success" | "error";
 
 @Component({
   selector: "app-assistance-dashboard",
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule],
   templateUrl: "./assistance-dashboard.component.html",
   styleUrl: "./assistance-dashboard.component.css",
 })
-export class AssistanceDashboardComponent {
+export class AssistanceDashboardComponent implements OnDestroy {
   private readonly verifiedIdService = inject(VerifiedIdService);
 
+  readonly state = signal<DashboardState>("idle");
+
+  /** 4-digit code to communicate verbally to the employee. */
   readonly assistanceCode = signal("");
-  readonly state = signal<LookupState>("idle");
-  readonly result = signal<AssistanceLookupResponse | null>(null);
+
+  /** Session ID used to poll status updates. */
+  readonly sessionId = signal("");
+
+  /** Verified claims once verification succeeds. */
+  readonly verifiedClaims = signal<Record<string, string | null> | null>(null);
+
   readonly errorMessage = signal("");
 
-  lookupByCode(): void {
-    const code = this.assistanceCode().trim();
-    if (!/^\d{4}$/.test(code)) {
-      this.state.set("error");
-      this.result.set(null);
-      this.errorMessage.set("Saisissez un code d'assistance à 4 chiffres.");
-      return;
-    }
+  private pollSubscription?: Subscription;
 
+  /** Start a new helpdesk assistance session. */
+  startSession(): void {
     this.state.set("loading");
     this.errorMessage.set("");
-    this.result.set(null);
+    this.verifiedClaims.set(null);
 
-    this.verifiedIdService.lookupAssistanceCode(code).subscribe({
-      next: (response) => {
-        this.result.set(response);
-        this.state.set("success");
+    this.verifiedIdService.createAssistanceSession().subscribe({
+      next: (resp) => {
+        this.assistanceCode.set(resp.code);
+        this.sessionId.set(resp.session_id);
+        this.state.set("waiting");
+        this.pollSession(resp.session_id);
       },
       error: (error: HttpErrorResponse) => {
         this.state.set("error");
-        this.result.set(null);
         this.errorMessage.set(
-          error.status === 404
-            ? "Aucun dossier de vérification ne correspond à ce code."
-            : "Impossible de récupérer les informations de vérification."
+          error.error?.detail ||
+            "Impossible de créer la session de vérification. Veuillez réessayer.",
         );
       },
     });
   }
 
-  onCodeInput(value: string): void {
-    const sanitized = value.replace(/\D/g, "").slice(0, 4);
-    this.assistanceCode.set(sanitized);
+  /** Poll the backend until the employee completes verification. */
+  private pollSession(sessionId: string): void {
+    this.pollSubscription = this.verifiedIdService
+      .pollStatus(sessionId)
+      .subscribe({
+        next: (status: VerificationStatus) => {
+          if (status.status === "success") {
+            this.verifiedClaims.set(
+              (status.claims as Record<string, string | null>) ?? {},
+            );
+            this.state.set("success");
+          } else if (status.status === "error") {
+            this.errorMessage.set(
+              status.error_message ?? "La vérification a échoué.",
+            );
+            this.state.set("error");
+          }
+        },
+        error: () => {
+          this.state.set("error");
+          this.errorMessage.set(
+            "Erreur de communication avec le serveur. Veuillez réessayer.",
+          );
+        },
+      });
   }
 
+  /** Reset to initial idle state. */
   reset(): void {
-    this.assistanceCode.set("");
-    this.result.set(null);
-    this.errorMessage.set("");
+    this.pollSubscription?.unsubscribe();
     this.state.set("idle");
+    this.assistanceCode.set("");
+    this.sessionId.set("");
+    this.verifiedClaims.set(null);
+    this.errorMessage.set("");
+  }
+
+  ngOnDestroy(): void {
+    this.pollSubscription?.unsubscribe();
   }
 
   statusLabel(status: string): string {
     switch (status) {
       case "success":
         return "Vérification réussie";
-      case "pending":
+      case "waiting":
         return "En attente";
       case "error":
         return "Échec de vérification";
@@ -81,29 +122,12 @@ export class AssistanceDashboardComponent {
     }
   }
 
-  statusBadgeClass(status: string): string {
-    switch (status) {
-      case "success":
-        return "text-bg-success";
-      case "pending":
-        return "text-bg-warning";
-      case "error":
-        return "text-bg-danger";
-      case "expired":
-        return "text-bg-secondary";
-      default:
-        return "text-bg-dark";
-    }
-  }
-
   verifiedFullName(claims?: Record<string, string | null>): string {
     if (!claims) {
       return "";
     }
-
     const firstName = claims["given_name"]?.trim() ?? "";
     const lastName = claims["family_name"]?.trim() ?? "";
-
     return `${firstName} ${lastName}`.trim();
   }
 

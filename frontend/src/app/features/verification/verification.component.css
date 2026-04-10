@@ -1,6 +1,22 @@
+/* ── Code input ─────────────────────────────────────────────────────── */
+
+.code-input {
+  max-width: 160px;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.4em;
+  border: 2px solid #c7d6ff;
+  border-radius: 0.75rem;
+  background: #f8faff;
+}
+
+.code-input:focus {
+  border-color: #122147;
+  box-shadow: 0 0 0 0.2rem rgba(18, 33, 71, 0.15);
+}
+
 /* ── QR image ───────────────────────────────────────────────────────── */
 
-/* Mobile first: QR fills available width up to 300px */
 .qr-image {
   width: min(300px, 100%);
   border: 6px solid #e9ecef;
@@ -16,39 +32,6 @@
   }
 }
 
-/* ── Assistance code ────────────────────────────────────────────────── */
-
-.assistance-code-block {
-  background: #f0f4ff;
-  border: 2px solid #c7d6ff;
-  border-radius: 1rem;
-  padding: 1rem 1.25rem;
-}
-
-.assistance-code-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #6c757d;
-  margin-bottom: 0.25rem;
-}
-
-/* clamp() ensures the code scales with screen width and is always readable */
-.assistance-code-digits {
-  font-size: clamp(2.8rem, 10vw, 3.5rem);
-  font-weight: 800;
-  letter-spacing: 0.35em;
-  color: #122147;
-  line-height: 1;
-}
-
-.assistance-code-hint {
-  font-size: 0.8rem;
-  color: #6c757d;
-  margin-top: 0.35rem;
-}
-
 /* ── Polling indicator ──────────────────────────────────────────────── */
 
 .polling-badge {
@@ -56,7 +39,7 @@
   border: 1px solid #b6d9f5;
   border-radius: 0.75rem;
   padding: 0.75rem 1rem;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: #0c5a8e;
 }
 

@@ -6,184 +6,168 @@
         Dashboard assistance
       </h2>
       <p class="text-muted mb-0">
-        Recherchez un dossier à partir du code transmis à l'utilisateur pour
-        confirmer son identité et voir si la vérification a bien abouti.
+        Générez un code d'assistance à communiquer oralement au salarié. La page
+        se met à jour automatiquement une fois la vérification effectuée.
       </p>
     </div>
   </div>
 
-  <div class="card shadow-sm border-0 dashboard-card mb-4">
-    <div class="card-body p-4">
-      <div class="row g-3 align-items-end">
-        <div class="col-md-8 col-lg-6">
-          <label for="assistanceCode" class="form-label fw-semibold">
-            Code d'assistance
-          </label>
-          <input
-            id="assistanceCode"
-            type="text"
-            class="form-control"
-            inputmode="numeric"
-            maxlength="4"
-            placeholder="Ex. 4821"
-            [ngModel]="assistanceCode()"
-            (ngModelChange)="onCodeInput($event)"
-            (keyup.enter)="lookupByCode()"
-          />
-          <div class="valid-feedback mt-1">
-            Code court remis à l'utilisateur au démarrage de la vérification.
-          </div>
-        </div>
-        <div class="col-md-auto">
-          <button class="btn btn-primary w-100" (click)="lookupByCode()">
-            <i class="bi bi-search me-2"></i>Vérifier
-          </button>
-        </div>
-        <div class="col-md-auto">
-          <button class="btn btn-outline-secondary w-100" (click)="reset()">
-            <i class="bi bi-arrow-counterclockwise me-2"></i>Réinitialiser
-          </button>
-        </div>
+  <!-- ── IDLE state ──────────────────────────────────────────────────── -->
+  @if (state() === "idle") {
+    <div class="card shadow-sm border-0">
+      <div class="card-body text-center py-5 px-3">
+        <i
+          class="bi bi-person-badge text-secondary mb-3"
+          style="font-size: 3.5rem"
+        ></i>
+        <h4 class="mb-2">Prêt à vérifier</h4>
+        <p class="text-muted mb-4">
+          Cliquez sur le bouton pour générer un code de vérification à
+          transmettre au salarié.
+        </p>
+        <button class="btn btn-primary px-5" (click)="startSession()">
+          <i class="bi bi-shield-plus me-2"></i>Démarrer une vérification
+        </button>
       </div>
     </div>
-  </div>
+  }
 
+  <!-- ── LOADING state ───────────────────────────────────────────────── -->
   @if (state() === "loading") {
     <div class="card shadow-sm border-0">
       <div class="card-body py-5 text-center">
         <div class="spinner-border text-primary mb-3" role="status">
           <span class="visually-hidden">Chargement...</span>
         </div>
-        <p class="text-muted mb-0">Recherche du dossier de vérification…</p>
+        <p class="text-muted mb-0">Création de la session…</p>
       </div>
     </div>
   }
 
+  <!-- ── WAITING state — code displayed, polling active ─────────────── -->
+  @if (state() === "waiting") {
+    <div class="row g-4">
+      <!-- Code block -->
+      <div class="col-12 col-md-5">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-header bg-primary text-white py-2">
+            <i class="bi bi-chat-square-dots me-2"></i>Code à communiquer
+          </div>
+          <div
+            class="card-body d-flex flex-column align-items-center gap-3 py-4"
+          >
+            <div class="code-block w-100 text-center">
+              <div class="code-label">Code d'assistance</div>
+              <div class="code-digits">{{ assistanceCode() }}</div>
+              <div class="code-hint">Lisez ce code à voix haute au salarié</div>
+            </div>
+
+            <!-- Polling indicator -->
+            <div
+              class="polling-badge d-flex align-items-center gap-2 w-100"
+              role="status"
+            >
+              <div
+                class="spinner-border spinner-border-sm flex-shrink-0"
+                aria-hidden="true"
+              ></div>
+              <span>En attente de la vérification du salarié…</span>
+            </div>
+
+            <button
+              class="btn btn-outline-secondary w-100 mt-auto"
+              (click)="reset()"
+            >
+              <i class="bi bi-arrow-counterclockwise me-1"></i>Annuler
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Instructions -->
+      <div class="col-12 col-md-7">
+        <div class="card shadow-sm border-0 h-100">
+          <div class="card-header py-2">
+            <i class="bi bi-list-ol me-2"></i>Instructions
+          </div>
+          <div class="card-body py-3">
+            <ol
+              class="list-group list-group-flush list-group-numbered step-list mb-0"
+            >
+              <li class="list-group-item border-0 px-0">
+                Communiquez le code
+                <strong>{{ assistanceCode() }}</strong> oralement au salarié.
+              </li>
+              <li class="list-group-item border-0 px-0">
+                Le salarié saisit ce code sur le portail
+                <strong>VerifID</strong> (<code>/verify</code>).
+              </li>
+              <li class="list-group-item border-0 px-0">
+                Il scanne le QR code généré avec
+                <strong>Microsoft Authenticator</strong>.
+              </li>
+              <li class="list-group-item border-0 px-0">
+                Les informations vérifiées s'affichent automatiquement sur cette
+                page.
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ── SUCCESS state ───────────────────────────────────────────────── -->
+  @if (state() === "success") {
+    <div class="card shadow-sm border-success">
+      <div class="card-header bg-success text-white py-2">
+        <i class="bi bi-check-circle-fill me-2"></i>Identité vérifiée avec
+        succès
+      </div>
+      <div class="card-body py-3">
+        @if (verifiedClaims(); as claims) {
+          @if (verifiedFullName(claims); as fullName) {
+            <div class="verified-person mb-4">
+              <div class="text-uppercase small fw-semibold text-muted">
+                Personne vérifiée
+              </div>
+              <div class="verified-person-name">{{ fullName }}</div>
+            </div>
+          }
+
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <tbody>
+                @for (entry of claims | keyvalue; track entry.key) {
+                  <tr>
+                    <th class="table-light w-35">
+                      {{ claimLabel(entry.key) }}
+                    </th>
+                    <td>{{ entry.value || "Non renseigné" }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+
+        <button class="btn btn-primary mt-4" (click)="reset()">
+          <i class="bi bi-arrow-repeat me-2"></i>Nouvelle vérification
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- ── ERROR state ─────────────────────────────────────────────────── -->
   @if (state() === "error") {
     <div class="alert alert-danger shadow-sm" role="alert">
       <div class="fw-semibold mb-1">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>Recherche impossible
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>Erreur
       </div>
-      <div>{{ errorMessage() }}</div>
-    </div>
-  }
-
-  @if (state() === "success" && result(); as lookup) {
-    <div class="row g-4">
-      <div class="col-xl-4">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-body p-4">
-            <div class="d-flex justify-content-between align-items-start mb-3">
-              <div>
-                <div class="text-uppercase text-muted small fw-semibold">
-                  Dossier utilisateur
-                </div>
-                <div class="display-6 fw-bold code-display">
-                  {{ lookup.code }}
-                </div>
-              </div>
-              <span
-                class="badge rounded-pill {{ statusBadgeClass(lookup.status) }}"
-              >
-                {{ statusLabel(lookup.status) }}
-              </span>
-            </div>
-
-            <div
-              class="status-panel mb-3"
-              [class.status-panel-success]="lookup.is_verified"
-            >
-              <div class="d-flex align-items-center gap-3">
-                <i
-                  class="bi fs-2"
-                  [class.bi-shield-check]="lookup.is_verified"
-                  [class.bi-hourglass-split]="lookup.status === 'pending'"
-                  [class.bi-x-circle]="
-                    lookup.status === 'error' || lookup.status === 'expired'
-                  "
-                ></i>
-                <div>
-                  <div class="fw-semibold">
-                    @if (lookup.is_verified) {
-                      Identité correctement vérifiée
-                    } @else {
-                      Vérification non finalisée
-                    }
-                  </div>
-                  <div class="small text-muted">
-                    @if (lookup.is_verified) {
-                      Les informations de l'identité présentée sont disponibles
-                      ci-dessous.
-                    } @else if (lookup.status === "pending") {
-                      L'utilisateur n'a pas encore terminé la présentation du
-                      credential.
-                    } @else {
-                      Consultez le message d'état avant de poursuivre
-                      l'assistance.
-                    }
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="small text-muted">Référence session</div>
-            <div class="session-id">{{ lookup.session_id }}</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-xl-8">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-header bg-white border-0 pt-4 px-4">
-            <h5 class="mb-1">Informations vérifiées</h5>
-            <p class="text-muted mb-0">
-              Données retournées par la présentation du Verified ID.
-            </p>
-          </div>
-          <div class="card-body px-4 pb-4">
-            @if (lookup.claims && lookup.is_verified) {
-              @if (verifiedFullName(lookup.claims); as fullName) {
-                <div class="verified-person mb-4">
-                  <div class="text-uppercase small fw-semibold text-muted">
-                    Personne vérifiée
-                  </div>
-                  <div class="verified-person-name">{{ fullName }}</div>
-                </div>
-              }
-              <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                  <tbody>
-                    @for (entry of lookup.claims | keyvalue; track entry.key) {
-                      <tr>
-                        <th class="table-light w-35">
-                          {{ claimLabel(entry.key) }}
-                        </th>
-                        <td>{{ entry.value || "Non renseigné" }}</td>
-                      </tr>
-                    }
-                  </tbody>
-                </table>
-              </div>
-            } @else {
-              <div class="empty-state">
-                <i class="bi bi-file-earmark-lock fs-1 text-muted"></i>
-                <h6 class="mt-3 mb-2">Aucune donnée vérifiée à afficher</h6>
-                <p class="text-muted mb-0">
-                  Les informations apparaîtront ici une fois la vérification
-                  terminée avec succès.
-                </p>
-              </div>
-            }
-
-            @if (lookup.error_message) {
-              <div class="alert alert-warning mt-4 mb-0" role="alert">
-                <div class="fw-semibold mb-1">Détail de l'état</div>
-                <div>{{ lookup.error_message }}</div>
-              </div>
-            }
-          </div>
-        </div>
-      </div>
+      <div class="mb-3">{{ errorMessage() }}</div>
+      <button class="btn btn-outline-danger btn-sm" (click)="reset()">
+        <i class="bi bi-arrow-repeat me-1"></i>Réessayer
+      </button>
     </div>
   }
 </div>

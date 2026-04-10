@@ -1,66 +1,84 @@
 /**
- * VerificationComponent – Helpdesk identity verification flow.
- * Displays a QR code and polls the backend until the employee
- * has presented their Verified Employee credential.
+ * VerificationComponent – Employee identity verification flow.
+ *
+ * New flow:
+ *  1. Employee receives a 4-digit code verbally from the helpdesk
+ *  2. Employee enters the code here
+ *  3. A QR code is generated for them to scan with Microsoft Authenticator
+ *  4. The component polls until verification is confirmed or fails
  */
-import { Component, OnDestroy, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Subscription } from 'rxjs';
+import { Component, OnDestroy, inject, signal } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { Subscription } from "rxjs";
 import {
   VerifiedIdService,
   VerificationStatus,
-} from '../../core/services/verified-id.service';
+} from "../../core/services/verified-id.service";
 
-type VerifyState = 'idle' | 'loading' | 'qr' | 'success' | 'error';
+type VerifyState = "idle" | "loading" | "qr" | "success" | "error";
 
 @Component({
-  selector: 'app-verification',
+  selector: "app-verification",
   standalone: true,
-  imports: [CommonModule],
-  templateUrl: './verification.component.html',
-  styleUrl: './verification.component.css',
+  imports: [CommonModule, FormsModule],
+  templateUrl: "./verification.component.html",
+  styleUrl: "./verification.component.css",
 })
 export class VerificationComponent implements OnDestroy {
   private readonly verifiedIdService = inject(VerifiedIdService);
 
   /** Current UI state */
-  state = signal<VerifyState>('idle');
+  state = signal<VerifyState>("idle");
+
+  /** 4-digit code entered by the employee */
+  enteredCode = signal<string>("");
 
   /** Base64 QR code PNG data */
-  qrCode = signal<string>('');
+  qrCode = signal<string>("");
 
   /** Deep-link for mobile (no QR scanner needed) */
-  deepLink = signal<string>('');
-
-  /** Short code to share with the user and support team */
-  assistanceCode = signal<string>('');
+  deepLink = signal<string>("");
 
   /** Verified claims from the presented credential */
   verifiedClaims = signal<Record<string, string> | null>(null);
 
   /** Error message to display */
-  errorMessage = signal<string>('');
+  errorMessage = signal<string>("");
 
   private pollSubscription?: Subscription;
 
-  /** Start a new verification session. */
-  startVerification(): void {
-    this.state.set('loading');
-    this.errorMessage.set('');
+  /** Sanitize input: digits only, max 4 chars. */
+  onCodeInput(value: string): void {
+    const sanitized = value.replace(/\D/g, "").slice(0, 4);
+    this.enteredCode.set(sanitized);
+  }
+
+  /** Submit the 4-digit code to retrieve the QR presentation. */
+  submitCode(): void {
+    const code = this.enteredCode().trim();
+    if (!/^\d{4}$/.test(code)) {
+      this.state.set("error");
+      this.errorMessage.set("Veuillez saisir un code à 4 chiffres.");
+      return;
+    }
+
+    this.state.set("loading");
+    this.errorMessage.set("");
     this.verifiedClaims.set(null);
 
-    this.verifiedIdService.startVerification().subscribe({
+    this.verifiedIdService.verifyCredentialByCode(code).subscribe({
       next: (resp) => {
         this.qrCode.set(resp.qr_code);
         this.deepLink.set(resp.url);
-        this.assistanceCode.set(resp.assistance_code);
-        this.state.set('qr');
+        this.state.set("qr");
         this.pollSession(resp.request_id);
       },
-      error: () => {
-        this.state.set('error');
+      error: (err) => {
+        this.state.set("error");
         this.errorMessage.set(
-          'Unable to contact the Verified ID service. Please try again.'
+          err.error?.detail ||
+            "Code introuvable ou déjà utilisé. Demandez un nouveau code au helpdesk.",
         );
       },
     });
@@ -72,19 +90,21 @@ export class VerificationComponent implements OnDestroy {
       .pollStatus(sessionId)
       .subscribe({
         next: (status: VerificationStatus) => {
-          if (status.status === 'success') {
+          if (status.status === "success") {
             this.verifiedClaims.set(status.claims ?? {});
-            this.state.set('success');
-          } else if (status.status === 'error') {
+            this.state.set("success");
+          } else if (status.status === "error") {
             this.errorMessage.set(
-              status.error_message ?? 'Verification failed.'
+              status.error_message ?? "Vérification échouée.",
             );
-            this.state.set('error');
+            this.state.set("error");
           }
         },
         error: () => {
-          this.state.set('error');
-          this.errorMessage.set('Polling error. Please refresh and try again.');
+          this.state.set("error");
+          this.errorMessage.set(
+            "Erreur de communication. Veuillez réessayer.",
+          );
         },
       });
   }
@@ -92,12 +112,12 @@ export class VerificationComponent implements OnDestroy {
   /** Reset to initial state. */
   reset(): void {
     this.pollSubscription?.unsubscribe();
-    this.state.set('idle');
-    this.qrCode.set('');
-    this.deepLink.set('');
-    this.assistanceCode.set('');
+    this.state.set("idle");
+    this.enteredCode.set("");
+    this.qrCode.set("");
+    this.deepLink.set("");
     this.verifiedClaims.set(null);
-    this.errorMessage.set('');
+    this.errorMessage.set("");
   }
 
   ngOnDestroy(): void {

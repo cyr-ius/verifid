@@ -42,6 +42,23 @@ class IssuanceResponse(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Assistance / Helpdesk session schemas
+# ---------------------------------------------------------------------------
+
+
+class AssistanceSessionResponse(BaseModel):
+    """
+    Response returned to the helpdesk when they create an assistance session.
+
+    The helpdesk communicates the code verbally to the employee, then polls
+    this session_id to know when the verification is complete.
+    """
+
+    session_id: str = Field(description="UUID to poll for status updates")
+    code: str = Field(description="4-digit code to communicate to the employee")
+
+
+# ---------------------------------------------------------------------------
 # Presentation / verification schemas
 # ---------------------------------------------------------------------------
 
