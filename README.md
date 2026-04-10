@@ -56,6 +56,18 @@ The development carried out is based on the examples provided by Microsoft in th
 
 ## Screenshot
 
+### Identity check (person being checked)
+
+<img width="1141" height="663" alt="image" src="https://github.com/user-attachments/assets/32e36d26-e20b-400d-998d-f2b2eaafe190" />
+<img width="1354" height="695" alt="image" src="https://github.com/user-attachments/assets/ee458734-5745-4a42-bbda-aa3c3e62baa3" />
+<img width="1348" height="535" alt="image" src="https://github.com/user-attachments/assets/54ea8564-674a-4f46-80e5-fec13f711811" />
+
+### Identity check (person performing the check)
+
+<img width="1371" height="606" alt="image" src="https://github.com/user-attachments/assets/1adc7064-5dd0-4efe-b563-d1328af3979b" />
+<img width="1348" height="535" alt="image" src="https://github.com/user-attachments/assets/bc12ae8f-741f-4655-9198-0790d06ba395" />
+
+
 
 
 
