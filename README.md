@@ -1,13 +1,19 @@
 # 🛡️ VerifID
 
-**VerifID** is a self-hosted employee identity verification portal powered by **Microsoft Entra Verified ID**.
-It enables HR teams to issue verifiable credentials to employees and helpdesk agents to verify employee identities without passwords — using a QR code and Microsoft Authenticator.
+**VerifID** is a contact verification portal based on **Microsoft Entra Verified ID**.
+
+It allows HR teams to provide verifiable credentials to employees. It also provides support teams with a way to verify their identity without a password, using a QR code and Microsoft Authenticator.
+
+The goal is to limit identity theft and fraud.
+
+[Verified ID](https://www.microsoft.com/en-us/security/business/identity-access/microsoft-entra-verified-id) For more information, you can visit the Microsoft website.
 
 ---
 
 ## Table of Contents
 
 - [Features](#features)
+- [Screenshots](#screenshots)
 - [Architecture](#architecture)
 - [Prerequisites](#prerequisites)
 - [Quick Start](#quick-start)
@@ -35,6 +41,11 @@ It enables HR teams to issue verifiable credentials to employees and helpdesk ag
 - 🔒 **Security headers** — CSP, HSTS, X-Frame-Options, Permissions-Policy applied on every response
 
 ---
+
+## Screenshot
+
+
+
 
 ## Architecture
 
