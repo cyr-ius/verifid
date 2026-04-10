@@ -4,12 +4,12 @@
 
 <img width="916" height="157" alt="image" src="https://github.com/user-attachments/assets/6cad31dd-1882-40f8-bb40-15fca81b5c96" />
 
-
 It allows HR teams to provide verifiable credentials to employees. It also provides support teams with a way to verify their identity without a password, using a QR code and Microsoft Authenticator.
 
 The goal is to limit identity theft and fraud.
 
 Microsoft Verified ID provides:
+
 - Digital fingerprint generation via the "My account" page
 - Digital fingerprint creation and verification APIs
 
@@ -18,7 +18,6 @@ This development offers a user-friendly interface focused on verifying the ident
 [Verified ID](https://www.microsoft.com/en-us/security/business/identity-access/microsoft-entra-verified-id) For more information, you can visit the Microsoft website.
 
 The development carried out is based on the examples provided by Microsoft in the [Azure-Samples repository](https://github.com/Azure-Samples/active-directory-verifiable-credentials)
-
 
 ---
 
@@ -66,10 +65,6 @@ The development carried out is based on the examples provided by Microsoft in th
 
 <img width="1371" height="606" alt="image" src="https://github.com/user-attachments/assets/1adc7064-5dd0-4efe-b563-d1328af3979b" />
 <img width="1348" height="535" alt="image" src="https://github.com/user-attachments/assets/bc12ae8f-741f-4655-9198-0790d06ba395" />
-
-
-
-
 
 ## Architecture
 
@@ -189,16 +184,16 @@ docker compose up -d
 
 ### Required
 
-| Variable              | Description                                                                    |
-| --------------------- | ------------------------------------------------------------------------------ |
-| `AZURE_TENANT_ID`     | Azure Active Directory tenant ID                                               |
-| `AZURE_CLIENT_ID`     | Client ID of the **Backend API** app registration  (Verif ID API interface)    |
-| `AZURE_CLIENT_SECRET` | Client secret for the backend app registration                                 |
-| `VERIFIED_ID_DID`     | Your Verified ID authority DID (e.g. `did:web:yourdomain.com`)                 |
-| `VERIFIED_ID_CONTRACT_ID` | Credential contract ID used to build the Verified ID issuance manifest URL |
-| `APP_BASE_URL`        | Public HTTPS base URL of the application — used by Microsoft to POST callbacks |
-| `API_KEY`             | Shared secret that Microsoft must include in callback headers                  |
-| `AUTH_CLIENT_ID`.     | Client ID of the **Frontend SPA** app registration (Verif ID interface)        |           
+| Variable                  | Description                                                                    |
+| ------------------------- | ------------------------------------------------------------------------------ |
+| `AZURE_TENANT_ID`         | Azure Active Directory tenant ID                                               |
+| `AZURE_CLIENT_ID`         | Client ID of the **Backend API** app registration (Verif ID API interface)     |
+| `AZURE_CLIENT_SECRET`     | Client secret for the backend app registration                                 |
+| `VERIFIED_ID_DID`         | Your Verified ID authority DID (e.g. `did:web:yourdomain.com`)                 |
+| `VERIFIED_ID_CONTRACT_ID` | Credential contract ID used to build the Verified ID issuance manifest URL     |
+| `APP_BASE_URL`            | Public HTTPS base URL of the application — used by Microsoft to POST callbacks |
+| `API_KEY`                 | Shared secret that Microsoft must include in callback headers                  |
+| `AUTH_CLIENT_ID`          | Client ID of the **Frontend SPA** app registration (Verif ID interface)        |
 
 ### Authentication
 
@@ -208,6 +203,8 @@ docker compose up -d
 | `AUTH_AUDIENCE`                 | Comma-separated accepted JWT audiences           | `AZURE_CLIENT_ID` |
 | `AUTH_SCOPE                   ` | Delegated scope accepted for helpdesk access     | `access_as_user`  |
 | `AUTH_JWKS_CACHE_TTL_SECONDS`   | Time to cache JWKS keys (reduce latency)         | `3600`            |
+| `AUTH_ROLE_HELPDESK`            | Comma-separated list of valid roles              | `helpdesk`        |
+| `AUTH_ROLE_HR`                  | Comma-separated list of valid roles              | `hr`              |
 
 ### Feature Flags
 
@@ -366,20 +363,20 @@ Roles are assigned via **Enterprise Applications**, not App Registrations.
 
 ### Summary Table
 
-| Purpose                                    | App Registration         | Key values                                                     |
-| ------------------------------------------ | ------------------------ | -------------------------------------------------------------- |
-| Backend token acquisition & JWT validation | `VerifID – Backend API`  | `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AUTH_AUDIENCE`      |
-| Frontend user sign-in (MSAL)               | `VerifID – Frontend SPA` | `AUTH_CLIENT_ID`                                               |
+| Purpose                                    | App Registration         | Key values                                                |
+| ------------------------------------------ | ------------------------ | --------------------------------------------------------- |
+| Backend token acquisition & JWT validation | `VerifID – Backend API`  | `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET`, `AUTH_AUDIENCE` |
+| Frontend user sign-in (MSAL)               | `VerifID – Frontend SPA` | `AUTH_CLIENT_ID`                                          |
 
 ---
 
 ## Roles & Permissions
 
-| Role / Scope                       | Grants access to                                                |
-| ---------------------------------- | --------------------------------------------------------------- |
-| `helpdesk` (app role)              | `/api/v1/verified-id/assist/{code}`                             |
-| `hr` (app role)                    | `/api/v1/verified-id/issue`                                     |
-| _(no auth)_                        | `/verify` page and `/api/v1/verified-id/verify`                 |
+| Role / Scope          | Grants access to                                |
+| --------------------- | ----------------------------------------------- |
+| `helpdesk` (app role) | `/api/v1/verified-id/assist/{code}`             |
+| `hr` (app role)       | `/api/v1/verified-id/issue`                     |
+| _(no auth)_           | `/verify` page and `/api/v1/verified-id/verify` |
 
 Authentication can be disabled entirely by setting `AUTH_ENABLED=False` — useful during initial setup and testing.
 

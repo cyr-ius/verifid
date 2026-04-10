@@ -13,9 +13,6 @@ bearer_scheme = HTTPBearer(auto_error=False)
 _openid_config_cache: tuple[float, dict[str, Any]] | None = None
 _jwks_cache: dict[str, tuple[float, dict[str, Any]]] = {}
 
-_AUTH_ROLE_HELPDESK: str = "helpdesk"
-_AUTH_ROLE_HR: str = "hr"
-
 
 async def _fetch_json(url: str) -> dict[str, Any]:
     async with httpx.AsyncClient(timeout=10) as client:
@@ -161,12 +158,12 @@ def require_roles(*required_roles: str) -> Callable[[dict[str, Any]], dict[str, 
 
 
 async def require_helpdesk_access(
-    principal: dict[str, Any] = Depends(require_roles(_AUTH_ROLE_HELPDESK)),
+    principal: dict[str, Any] = Depends(require_roles(app_settings.AUTH_ROLE_HELPDESK)),
 ) -> dict[str, Any]:
     return principal
 
 
 async def require_hr_access(
-    principal: dict[str, Any] = Depends(require_roles(_AUTH_ROLE_HR)),
+    principal: dict[str, Any] = Depends(require_roles(app_settings.AUTH_ROLE_HR)),
 ) -> dict[str, Any]:
     return principal

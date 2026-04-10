@@ -20,7 +20,9 @@ class Settings(BaseSettings):
     AZURE_CLIENT_ID: str  # e.g. backend-app-client-id
     AZURE_CLIENT_SECRET: str  # e.g. backend-app-client-secret
     VERIFIED_ID_DID: str  # did:web:yourdomain.com
-    VERIFIED_ID_CONTRACT_ID: str  # Verifiable Credential contract ID used for issuance manifest
+    VERIFIED_ID_CONTRACT_ID: (
+        str  # Verifiable Credential contract ID used for issuance manifest
+    )
     APP_BASE_URL: str  # e.g. https://yourdomain.com
     API_KEY: str = Field(min_length=1)  # API key for callbacks (required and non-empty)
     AUTH_ENABLED: bool = True  # Whether to enable authentication (set to False for development without auth)
@@ -28,6 +30,8 @@ class Settings(BaseSettings):
     AUTH_AUDIENCE: str  # e.g. api://your-api-audience, can be comma-separated for multiple audiences
     AUTH_JWKS_CACHE_TTL_SECONDS: int = 3600
     AUTH_SCOPE: str = "access_as_user"  # Scope for frontend authentication
+    AUTH_ROLE_HELPDESK: str = "helpdesk"  # Role name for helpdesk users
+    AUTH_ROLE_HR: str = "hr"  # Role name for HR users
     LOGO_URL: str = "/icons/icon-128x128.png"  # URL to the logo image
     LOG_LEVEL: str = "INFO"  # Logging level (e.g. DEBUG, INFO, WARNING, ERROR)
     SWAGGER_ENABLE: bool = False  # Whether to enable Swagger UI for API documentation
