@@ -1,6 +1,8 @@
 # storage.py
+import logging
 import random
 import uuid
+from datetime import datetime
 from typing import Any, Literal
 
 from pydantic import BaseModel
@@ -9,6 +11,7 @@ from pydantic import BaseModel
 # In-memory session store (replace with Redis / DB in production)
 # ---------------------------------------------------------------------------
 sessions: dict[str, dict[str, Any]] = {}
+logger = logging.getLogger(__name__)
 
 
 class Session(BaseModel):
@@ -19,6 +22,8 @@ class Session(BaseModel):
     claims: dict
     code: str | None = None
     error_message: str | None = None
+    created_at: datetime = datetime.now()
+    updated_at: float | None = None
 
 
 def create_session(
@@ -39,6 +44,7 @@ def create_session(
         type=session_type,
         claims={},
     ).model_dump()
+    logger.info(f"Created new session {session_id} of type {session_type}")
     return session_id
 
 

@@ -12,6 +12,7 @@ Flows supported:
 """
 
 import logging
+from datetime import datetime
 
 from fastapi import APIRouter, Depends, Header, HTTPException, status
 
@@ -269,6 +270,7 @@ async def presentation_callback(
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
 
     session = sessions.get(payload.state, {})
+    session["updated_at"] = datetime.now()
 
     if payload.request_status == "presentation_verified":
         session["status"] = "success"
@@ -280,7 +282,15 @@ async def presentation_callback(
             payload.error.message if payload.error else "Presentation failed"
         )
         logger.warning("Presentation error for session %s", payload.state)
-    # "request_retrieved" means the employee scanned the QR – keep pending
+
+    logger.info(
+        "Updated session %s with new status: %s (revId: %s)",
+        payload.state,
+        session.get("status"),
+        session["claims"].get("revocationId"),
+    )
+
+    logger.debug("Full session data after update: %s", session)
 
     sessions[payload.state] = session
 
