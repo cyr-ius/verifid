@@ -17,9 +17,4 @@ services:
       - AUTH_CLIENT_ID=${AUTH_CLIENT_ID}
       - SWAGGER_ENABLE=${SWAGGER_ENABLE:-False}
     ports:
-      - 8000:8000/tcp
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      - 8080:8080/tcp
