@@ -21,7 +21,7 @@ LABEL org.opencontainers.image.source="https://github.com/cyr-ius/verifid"
 LABEL org.opencontainers.image.url="https://github.com/cyr-ius/verifid"
 LABEL org.opencontainers.image.licenses="MIT"
 
-RUN apk add --no-cache ca-certificates
+RUN apk add --no-cache curl ca-certificates
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
