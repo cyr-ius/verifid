@@ -115,7 +115,7 @@ The development carried out is based on the examples provided by Microsoft in th
 ```bash
 docker run -d \
   --name verifid \
-  -p 8000:8000 \
+  -p 8080:8080 \
   -e AZURE_TENANT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
   -e AZURE_CLIENT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
   -e AZURE_CLIENT_SECRET=your-client-secret \
@@ -138,7 +138,7 @@ services:
     container_name: verifid
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "8080:8080"
     environment:
       - AZURE_TENANT_ID=${AZURE_TENANT_ID}
       - AZURE_CLIENT_ID=${AZURE_CLIENT_ID}
