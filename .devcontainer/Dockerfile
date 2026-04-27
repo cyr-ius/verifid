@@ -1,10 +1,10 @@
-# ─── FastAPI + Angular Development Image ─────────────────────────────────────────────
+# ─── FastAPI + Angular Development Image ───────────────────────────────────────
 
 FROM mcr.microsoft.com/devcontainers/base:alpine
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# ── System dependencies (apk = gestionnaire Alpine) ────────────────────────
+# ── System dependencies (apk = gestionnaire Alpine) ────────────────────────────
 RUN apk add --no-cache \
     curl \
     git \
@@ -12,29 +12,29 @@ RUN apk add --no-cache \
     nodejs \
     npm
 
-# ── Installation de uv (gestionnaire Python ultra-rapide) ──────────────────
+# ── uv (fast Python package manager) ───────────────────────────────────────────
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
 
-# Configurer uv pour installer dans le système (pas de venv par défaut)
-ENV UV_SYSTEM_PYTHON=1 \
+# ── Environment variables for Python and uv ────────────────────────────────────
+ENV UV_LINK_MODE=copy \
     UV_NO_CACHE=1 \
-    UV_LINK_MODE=copy \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-# ── Angular CLI 21 + outils globaux ────────────────────────────────────────
+# ── Node.js LTS + Angular CLI ──────────────────────────────────────────────────
 ENV NG_CLI_ANALYTICS=ci \
     NG_FORCE_TTY=false
+
 RUN npm install -g \
     @angular/cli@21 \
-    typescript \
     prettier@3
 
 USER vscode
 
-# ── Dépendances Python via uv ───────────────────────────────────────────────
+# ── Dependencies ───────────────────────────────────────────────────────────────
 RUN uv tool install ruff \
-    && uv tool install pre-commit
+    && uv tool install prek \
+    && uv tool install alembic
 
-# ── Workspace ───────────────────────────────────────────────────────────────
-WORKDIR /workspace
+# ── Default shell to bash instead of sh ─────────
+ENV SHELL=/bin/bash

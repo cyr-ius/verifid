@@ -1,8 +1,10 @@
 {
   "name": "FastAPI + Angular Dev Environment",
-  "dockerComposeFile": "docker-compose.yml",
-  "service": "app",
-  "workspaceFolder": "/workspace",
+  "dockerFile": "Dockerfile",
+  "mounts": [
+    "source=${env:HOME}/.claude,target=/home/vscode/.claude,type=bind,consistency=cached",
+    "target=${containerWorkspaceFolder}/.data_env,type=volume,consistency=cached"
+  ],
 
   // ─── VS Code extensions ────────────────────────────────────────────────
   "customizations": {
@@ -19,14 +21,14 @@
         "ms-vscode-remote.remote-containers",
         "streetsidesoftware.code-spell-checker",
         "streetsidesoftware.code-spell-checker-french",
-        "openai.chatgpt",
+        "anthropic.claude-code",
         "humao.rest-client",
         "editorconfig.editorconfig"
       ],
       "settings": {
         // ── Python ──────────────────────────────────────────────────────
-        "python.defaultInterpreterPath": "/workspace/backend/.venv/bin/python",
-        "python.pythonPath": "/workspace/backend/.venv/bin/python",
+        "python.defaultInterpreterPath": "${workspaceFolder}/backend/.venv/bin/python",
+        "python.pythonPath": "${workspaceFolder}/backend/.venv/bin/python",
         "python.terminal.activateEnvInCurrentTerminal": true,
         "[python]": {
           "editor.defaultFormatter": "charliermarsh.ruff",
@@ -47,14 +49,16 @@
           "editor.formatOnSave": true
         },
         "[json]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
         },
         "[html]": {
           "editor.defaultFormatter": "esbenp.prettier-vscode",
           "editor.formatOnSave": true
         },
         "[yaml]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
+          "editor.defaultFormatter": "esbenp.prettier-vscode",
+          "editor.formatOnSave": true
         },
         "json.schemas": [
           {
@@ -83,8 +87,14 @@
     "8000": { "label": "FastAPI Backend", "onAutoForward": "notify" }
   },
 
+  // ─── Environment varaibles ──────────────────────────────────────────────
+  "containerEnv": {
+    "NG_FORCE_TTY": "false", // For Angular CLI to work properly in non-interactive terminals (like VS Code's integrated terminal)
+    "DATA_DIR": "${containerWorkspaceFolder}/.data_env" // (db, configuration files, etc...)
+  },
+
   // ─── Cycle de vie ──────────────────────────────────────────────────────
-  "postCreateCommand": "bash .devcontainer/scripts/post-create.sh",
+  "postCreateCommand": "bash .devcontainer/scripts/post-create.sh ${containerWorkspaceFolder}",
 
   // ─── Utilisateur non-root ──────────────────────────────────────────────
   "remoteUser": "vscode"

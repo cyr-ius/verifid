@@ -1,5 +1,10 @@
-# Compiled output
-/node_modules
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+*.egg-info/
 
 # IDEs and editors
 .idea/
@@ -22,9 +27,3 @@
 # System files
 .DS_Store
 Thumbs.db
-
-# Environment
-.env
-
-# Temporary data
-.data_env/
