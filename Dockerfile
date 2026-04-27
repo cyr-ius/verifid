@@ -48,7 +48,7 @@ ARG VERSION
 ENV APP_VERSION=${VERSION:-"1.0.0"}
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
-    CMD curl -f http://localhost:8000/api/health || exit 1
+    CMD curl -f http://localhost:8080/api/health || exit 1
 
 EXPOSE 8080/tcp
 
