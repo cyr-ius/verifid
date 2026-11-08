@@ -14,13 +14,10 @@
         "ms-python.vscode-pylance",
         "charliermarsh.ruff",
         "angular.ng-template",
-        "ms-vscode.vscode-typescript-next",
         "esbenp.prettier-vscode",
         "dbaeumer.vscode-eslint",
         "ms-azuretools.vscode-docker",
-        "ms-vscode-remote.remote-containers",
         "streetsidesoftware.code-spell-checker",
-        "streetsidesoftware.code-spell-checker-french",
         "anthropic.claude-code",
         "humao.rest-client",
         "editorconfig.editorconfig"
