@@ -6,10 +6,24 @@
 version: 2
 updates:
   - package-ecosystem: "github-actions" # See documentation for possible values
+    target-branch: "dev"
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
   - package-ecosystem: "uv"
-    directory: "/"
+    target-branch: "dev"
+    directory: "/backend"
     schedule:
       interval: "weekly"
+  - package-ecosystem: "npm"
+    target-branch: "dev"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+    groups:
+      # Angular packages must move together (exact peer dependencies)
+      angular:
+        patterns:
+          - "@angular/*"
+          - "@angular-devkit/*"
+          - "typescript"
