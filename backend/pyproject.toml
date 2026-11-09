@@ -5,7 +5,7 @@ description = "VerifID"
 requires-python = ">=3.14"
 
 dependencies = [
-    "fastapi[standard]==0.135.2",
+    "fastapi[standard]==0.162.0",
     "pydantic[email]",
     "pydantic-settings",
     "sqlmodel==0.0.37",
@@ -13,14 +13,14 @@ dependencies = [
     "alembic",
     "python-jose[cryptography]",
     "python-multipart",
-    "msal>=1.35.1",
+    "msal>=1.39.0",
 ]
 
 [dependency-groups]
 dev = [
     "mypy>=1.19.1",
-    "prek>=0.3.9",
-    "ruff>=0.15.8",
+    "prek>=0.5.10",
+    "ruff>=0.17.4",
 ]
 
 [tool.setuptools]
