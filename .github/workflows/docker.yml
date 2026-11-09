@@ -1,0 +1,46 @@
+---
+name: Docker image
+
+# Every pull request builds and smoke-tests the image. A release (publish.yml on
+# a X.Y.Z tag) or a manual run with "push" publishes it to GitHub Container
+# Registry and Docker Hub (repository secret DOCKERHUB_TOKEN).
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      push:
+        description: "Publish the images (tagged with the branch name)"
+        type: boolean
+        default: false
+  workflow_call:
+    inputs:
+      push:
+        description: "Publish the images"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  docker:
+    permissions:
+      contents: read
+      packages: write
+    uses: cyr-ius/.github/.github/workflows/web-docker.yml@v1
+    with:
+      image: verifid
+      title: "VerifID"
+      description: "A self-hosted employee identity verification portal powered by Microsoft Entra Verified ID"
+      smoke-port: 8080
+      # Required settings, with dummy values: the health check calls no Azure service
+      smoke-args: >-
+        -e AZURE_TENANT_ID=00000000-0000-0000-0000-000000000000
+        -e AZURE_CLIENT_ID=smoke-test -e AZURE_CLIENT_SECRET=smoke-test
+        -e VERIFIED_ID_DID=did:web:example.com -e VERIFIED_ID_CONTRACT_ID=smoke-test
+        -e APP_BASE_URL=http://localhost:8080 -e API_KEY=smoke-test
+        -e AUTH_CLIENT_ID=smoke-test -e AUTH_AUDIENCE=api://smoke-test
+      push: ${{ inputs.push == true }}
+      dockerhub-readme: true
+    secrets:
+      dockerhub-token: ${{ secrets.DOCKERHUB_TOKEN }}
