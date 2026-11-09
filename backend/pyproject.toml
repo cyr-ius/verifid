@@ -13,7 +13,7 @@ dependencies = [
     "alembic",
     "python-jose[cryptography]",
     "python-multipart",
-    "msal>=1.35.1",
+    "msal>=1.39.0",
 ]
 
 [dependency-groups]
