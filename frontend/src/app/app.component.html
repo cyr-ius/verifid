@@ -1,9 +1,6 @@
 <nav class="navbar app-navbar navbar-expand-lg navbar-dark shadow-sm">
   <div class="container">
-    <a
-      class="navbar-brand fw-bold d-flex align-items-center gap-2"
-      [routerLink]="localizedLink('verify')"
-    >
+    <a class="navbar-brand fw-bold d-flex align-items-center gap-2" [routerLink]="localizedLink('verify')">
       @if (logoUrl() != "") {
         <img [src]="logoUrl()" alt="Logo" class="brand-logo" />
       } @else {
@@ -30,23 +27,14 @@
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
         <!-- /verify always visible -->
         <li class="nav-item">
-          <a
-            class="nav-link"
-            [routerLink]="localizedLink('verify')"
-            routerLinkActive="active"
-            aria-current="page"
-          >
+          <a class="nav-link" [routerLink]="localizedLink('verify')" routerLinkActive="active" aria-current="page">
             <i class="bi bi-shield-check me-2"></i>{{ i18n.t("nav.verify") }}
           </a>
         </li>
         <!-- Assistance — helpdesk role, or auth disabled -->
         @if (authService.isHelpdesk()) {
           <li class="nav-item">
-            <a
-              class="nav-link"
-              [routerLink]="localizedLink('assist')"
-              routerLinkActive="active"
-            >
+            <a class="nav-link" [routerLink]="localizedLink('assist')" routerLinkActive="active">
               <i class="bi bi-headset me-2"></i>{{ i18n.t("nav.assist") }}
             </a>
           </li>
@@ -54,11 +42,7 @@
         <!-- Émission — hr role, or auth disabled -->
         @if (authService.isHR()) {
           <li class="nav-item">
-            <a
-              class="nav-link"
-              [routerLink]="localizedLink('issue')"
-              routerLinkActive="active"
-            >
+            <a class="nav-link" [routerLink]="localizedLink('issue')" routerLinkActive="active">
               <i class="bi bi-award me-2"></i>{{ i18n.t("nav.issue") }}
             </a>
           </li>
@@ -89,15 +73,9 @@
           <hr class="d-lg-none border-secondary my-2" />
           @if (authService.isAuthenticated()) {
             <li class="nav-item">
-              <a
-                class="nav-link"
-                [routerLink]="localizedLink('me')"
-                routerLinkActive="active"
-              >
+              <a class="nav-link" [routerLink]="localizedLink('me')" routerLinkActive="active">
                 <i class="bi bi-person-circle me-1"></i>
-                {{
-                  authService.account()?.name || authService.account()?.username
-                }}
+                {{ authService.account()?.name || authService.account()?.username }}
               </a>
             </li>
             <button class="btn btn-outline-light btn-sm" (click)="logout()">
@@ -105,8 +83,7 @@
             </button>
           } @else {
             <button class="btn btn-light btn-sm" (click)="login()">
-              <i class="bi bi-box-arrow-in-right me-1"></i
-              >{{ i18n.t("nav.login") }}
+              <i class="bi bi-box-arrow-in-right me-1"></i>{{ i18n.t("nav.login") }}
             </button>
           }
         </ul>

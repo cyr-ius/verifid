@@ -15,10 +15,7 @@
   @if (state() === "idle") {
     <div class="card shadow-sm border-0">
       <div class="card-body text-center py-5 px-3">
-        <i
-          class="bi bi-person-badge text-secondary mb-3"
-          style="font-size: 3.5rem"
-        ></i>
+        <i class="bi bi-person-badge text-secondary mb-3" style="font-size: 3.5rem"></i>
         <h4 class="mb-2">{{ i18n.t("assist.ready") }}</h4>
         <p class="text-muted mb-4">
           {{ i18n.t("assist.readyBody") }}
@@ -35,9 +32,7 @@
     <div class="card shadow-sm border-0">
       <div class="card-body py-5 text-center">
         <div class="spinner-border text-primary mb-3" role="status">
-          <span class="visually-hidden">{{
-            i18n.t("assist.loadingHint")
-          }}</span>
+          <span class="visually-hidden">{{ i18n.t("assist.loadingHint") }}</span>
         </div>
         <p class="text-muted mb-0">{{ i18n.t("assist.loading") }}</p>
       </div>
@@ -51,12 +46,9 @@
       <div class="col-12 col-md-5">
         <div class="card shadow-sm border-0 h-100">
           <div class="card-header bg-primary text-white py-2">
-            <i class="bi bi-chat-square-dots me-2"></i
-            >{{ i18n.t("assist.codeCard") }}
+            <i class="bi bi-chat-square-dots me-2"></i>{{ i18n.t("assist.codeCard") }}
           </div>
-          <div
-            class="card-body d-flex flex-column align-items-center gap-3 py-4"
-          >
+          <div class="card-body d-flex flex-column align-items-center gap-3 py-4">
             <div class="code-block w-100 text-center">
               <div class="code-label">{{ i18n.t("assist.codeLabel") }}</div>
               <div class="code-digits">{{ assistanceCode() }}</div>
@@ -66,23 +58,13 @@
             </div>
 
             <!-- Polling indicator -->
-            <div
-              class="polling-badge d-flex align-items-center gap-2 w-100"
-              role="status"
-            >
-              <div
-                class="spinner-border spinner-border-sm flex-shrink-0"
-                aria-hidden="true"
-              ></div>
+            <div class="polling-badge d-flex align-items-center gap-2 w-100" role="status">
+              <div class="spinner-border spinner-border-sm flex-shrink-0" aria-hidden="true"></div>
               <span>{{ i18n.t("assist.waiting") }}</span>
             </div>
 
-            <button
-              class="btn btn-outline-secondary w-100 mt-auto"
-              (click)="reset()"
-            >
-              <i class="bi bi-arrow-counterclockwise me-1"></i
-              >{{ i18n.t("assist.cancel") }}
+            <button class="btn btn-outline-secondary w-100 mt-auto" (click)="reset()">
+              <i class="bi bi-arrow-counterclockwise me-1"></i>{{ i18n.t("assist.cancel") }}
             </button>
           </div>
         </div>
@@ -91,14 +73,9 @@
       <!-- Instructions -->
       <div class="col-12 col-md-7">
         <div class="card shadow-sm border-0 h-100">
-          <div class="card-header py-2">
-            <i class="bi bi-list-ol me-2"></i
-            >{{ i18n.t("assist.instructions") }}
-          </div>
+          <div class="card-header py-2"><i class="bi bi-list-ol me-2"></i>{{ i18n.t("assist.instructions") }}</div>
           <div class="card-body py-3">
-            <ol
-              class="list-group list-group-flush list-group-numbered step-list mb-0"
-            >
+            <ol class="list-group list-group-flush list-group-numbered step-list mb-0">
               <li class="list-group-item border-0 px-0">
                 {{ i18n.t("assist.step1", { portalUrl }) }}
               </li>
@@ -125,8 +102,7 @@
   @if (state() === "success") {
     <div class="card shadow-sm border-success">
       <div class="card-header bg-success text-white py-2">
-        <i class="bi bi-check-circle-fill me-2"></i
-        >{{ i18n.t("assist.successTitle") }}
+        <i class="bi bi-check-circle-fill me-2"></i>{{ i18n.t("assist.successTitle") }}
       </div>
       <div class="card-body py-3">
         @if (verifiedClaims(); as claims) {
@@ -166,8 +142,7 @@
   @if (state() === "error") {
     <div class="alert alert-danger shadow-sm" role="alert">
       <div class="fw-semibold mb-1">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i
-        >{{ i18n.t("assist.errorTitle") }}
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ i18n.t("assist.errorTitle") }}
       </div>
       <div class="mb-3">{{ errorMessage() }}</div>
       <button class="btn btn-outline-danger btn-sm" (click)="reset()">
