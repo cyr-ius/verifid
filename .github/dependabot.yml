@@ -20,6 +20,12 @@ updates:
     directory: "/frontend"
     schedule:
       interval: "weekly"
+    ignore:
+      # Angular supports one TypeScript minor version: it moves with an Angular update
+      - dependency-name: "typescript"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
     groups:
       # Angular packages must move together (exact peer dependencies)
       angular:
