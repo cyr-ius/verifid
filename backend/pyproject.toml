@@ -5,7 +5,7 @@ description = "VerifID"
 requires-python = ">=3.14"
 
 dependencies = [
-    "fastapi[standard]==0.135.2",
+    "fastapi[standard]==0.162.0",
     "pydantic[email]",
     "pydantic-settings",
     "sqlmodel==0.0.37",
