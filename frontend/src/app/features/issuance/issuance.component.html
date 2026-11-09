@@ -16,8 +16,7 @@
   @if (state() === "form" || state() === "error") {
     <div class="card shadow-sm">
       <div class="card-header bg-primary text-white">
-        <i class="bi bi-person-plus me-2"></i
-        >{{ i18n.t("issuance.card.title") }}
+        <i class="bi bi-person-plus me-2"></i>{{ i18n.t("issuance.card.title") }}
       </div>
       <div class="card-body">
         <form (submit)="onSubmit($event)">
@@ -90,8 +89,7 @@
 
           @if (state() === "error") {
             <div class="alert alert-danger mt-3">
-              <i class="bi bi-exclamation-triangle me-2"></i
-              >{{ errorMessage() }}
+              <i class="bi bi-exclamation-triangle me-2"></i>{{ errorMessage() }}
             </div>
           }
 
@@ -124,18 +122,10 @@
             <i class="bi bi-qr-code me-2"></i>{{ i18n.t("issuance.qrTitle") }}
           </div>
           <div class="card-body text-center py-4">
-            <img
-              [src]="qrCode()"
-              [alt]="i18n.t('issuance.qrAlt')"
-              class="img-fluid qr-image mb-3"
-            />
+            <img [src]="qrCode()" [alt]="i18n.t('issuance.qrAlt')" class="img-fluid qr-image mb-3" />
             @if (deepLink()) {
-              <a
-                [href]="deepLink()"
-                class="btn btn-outline-primary btn-sm d-block"
-              >
-                <i class="bi bi-phone me-1"></i
-                >{{ i18n.t("issuance.mobileLink") }}
+              <a [href]="deepLink()" class="btn btn-outline-primary btn-sm d-block">
+                <i class="bi bi-phone me-1"></i>{{ i18n.t("issuance.mobileLink") }}
               </a>
             }
           </div>
@@ -144,10 +134,7 @@
 
       <div class="col-md-7">
         <div class="card shadow-sm h-100">
-          <div class="card-header">
-            <i class="bi bi-info-circle me-2"></i
-            >{{ i18n.t("issuance.instructions") }}
-          </div>
+          <div class="card-header"><i class="bi bi-info-circle me-2"></i>{{ i18n.t("issuance.instructions") }}</div>
           <div class="card-body">
             <ol class="list-group list-group-flush list-group-numbered">
               <li class="list-group-item border-0">
