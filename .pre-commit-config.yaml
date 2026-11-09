@@ -48,4 +48,5 @@ repos:
       - id: prettier
         args: ["--print-width=120"]
         types_or: [javascript, html, css, scss, json, yaml, markdown]
-        exclude: node_modules|.agents|swagger
+        # CHANGELOG.md is written by Release Please: its pull request must pass as generated
+        exclude: node_modules|.agents|swagger|^CHANGELOG\.md$
