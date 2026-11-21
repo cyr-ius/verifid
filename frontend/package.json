@@ -19,7 +19,7 @@
     "@angular/platform-browser-dynamic": "^22.3.0",
     "@angular/router": "^22.3.0",
     "@angular/service-worker": "^22.3.0",
-    "@azure/msal-browser": "^5.29.0",
+    "@azure/msal-browser": "^5.29.1",
     "bootstrap": "^5.3.9",
     "bootstrap-icons": "^1.13.2",
     "jwt-decode": "^4.0.0",
